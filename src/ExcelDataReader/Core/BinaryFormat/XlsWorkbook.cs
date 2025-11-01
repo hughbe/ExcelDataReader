@@ -28,9 +28,17 @@ internal sealed class XlsWorkbook : CommonWorkbook, IWorkbook<XlsWorksheet>
             case BIFFTYPE.WorkbookGlobals:
                 ReadWorkbookGlobals(biffStream);
                 break;
+            case BIFFTYPE.v4WorkbookGlobals:
+                // set up 'virtual' bound sheet pointing at this
+                Sheets.Add(new XlsBiffBoundSheet(0, XlsBiffBoundSheet.SheetType.Worksheet, XlsBiffBoundSheet.SheetVisibility.Visible, "Sheet"));
+                break;
             case BIFFTYPE.Worksheet:
                 // set up 'virtual' bound sheet pointing at this
                 Sheets.Add(new XlsBiffBoundSheet(0, XlsBiffBoundSheet.SheetType.Worksheet, XlsBiffBoundSheet.SheetVisibility.Visible, "Sheet"));
+                break;
+            case BIFFTYPE.Chart:
+                // set up 'virtual' bound sheet pointing at this
+                Sheets.Add(new XlsBiffBoundSheet(0, XlsBiffBoundSheet.SheetType.Chart, XlsBiffBoundSheet.SheetVisibility.Visible, "Sheet"));
                 break;
             case BIFFTYPE.MacroSheet:
                 // set up 'virtual' bound sheet pointing at this
@@ -68,6 +76,14 @@ internal sealed class XlsWorkbook : CommonWorkbook, IWorkbook<XlsWorksheet>
     public List<XlsBiffFont> Fonts { get; } = [];
 
     public List<XlsBiffBoundSheet> Sheets { get; } = [];
+
+    public List<XlsBiffSupBook> ExternalWorkbooks { get; } = [];
+
+    public List<XlsBiffExternalSheet> ExternalSheets { get; } = [];
+
+    public List<XlsBiffDefinedName> DefinedNames { get; } = [];
+
+    public List<XlsBiffExternalName> ExternalNames { get; } = [];
 
     /// <summary>
     /// Gets or sets the Shared String Table of workbook.
@@ -215,12 +231,42 @@ internal sealed class XlsWorkbook : CommonWorkbook, IWorkbook<XlsWorksheet>
                     ActiveSheet = rec.ReadInt16(10);
                     break;
 
+                case XlsBiffExternalSheet externalSheet:
+                    // In BIFF2-5, external sheet references are stored on the 
+                    // worksheet level.
+                    // In BIFF8+, external sheet references are stored on the 
+                    // workbook level.
+                    ExternalSheets.Add(externalSheet);
+                    break;
+
+                case XlsBiffExternalName externalName:
+                    // In BIFF2-5, external names are stored on the worksheet level.
+                    // In BIFF8+, external names are stored on the workbook level.
+                    // The formula is not provided for workbook level external names.
+                    ExternalNames.Add(externalName);
+                    break;
+
+                case XlsBiffSupBook externalWorkbook:
+                    ExternalWorkbooks.Add(externalWorkbook);
+                    break;
+
+                case XlsBiffDefinedName definedName:
+                    {
+                        DefinedNames.Add(definedName);
+                        break;
+                    }
+
                 // case BIFFRECORDTYPE.PROTECT:
                 // case BIFFRECORDTYPE.PROT4REVPASSWORD:
                     // IsProtected
                     // break;
                 // case BIFFRECORDTYPE.PASSWORD:
                 default:
+                    if (!Enum.IsDefined(typeof(BIFFRECORDTYPE), (ushort)rec.Id))
+                    {
+                        throw new NotImplementedException($"Unsupported BIFF record type: {(ushort)rec.Id}");
+                    }
+
                     break;
             }
         }

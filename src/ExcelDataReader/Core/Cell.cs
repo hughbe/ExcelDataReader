@@ -12,4 +12,6 @@ namespace ExcelDataReader.Core;
 /// the Cell XF, with optional overrides from a Cell Style XF.
 /// </param>
 /// <param name="Error">Cell error -or- <s langword="null"/>.</param>
-internal sealed record Cell(int ColumnIndex, object? Value, ExtendedFormat EffectiveStyle, CellError? Error);
+/// <param name="Formula">The cell formula -or- <s langword="null"/>.</param>
+/// <param name="Note">The cell note -or- <s langword="null"/>.</param>
+internal sealed record Cell(int ColumnIndex, object? Value, ExtendedFormat EffectiveStyle, CellError? Error, string? Formula, string? Note);

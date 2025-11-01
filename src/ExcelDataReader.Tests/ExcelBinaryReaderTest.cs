@@ -484,7 +484,7 @@ public class ExcelBinaryReaderTest : ExcelTestBase
     }
 
     [Test]
-    public void As3XlsBiff2()
+    public void As3XlsBIFF2()
     {
         using var excelReader = ExcelReaderFactory.CreateBinaryReader(Configuration.GetTestWorkbook("as3xls_BIFF2.xls"));
         DataSet result = excelReader.AsDataSet();
@@ -1093,7 +1093,6 @@ public class ExcelBinaryReaderTest : ExcelTestBase
         Assert.That(dataSet.Tables[0].TableName, Is.EqualTo("List1"));
     }
 
-    [Test]
     public void Read_XlsExcel20()
     {
         using var stream = Configuration.GetTestWorkbook(Path.Combine("xls", "SIMPLE.XLS"));
@@ -1111,7 +1110,7 @@ public class ExcelBinaryReaderTest : ExcelTestBase
     [Test]
     public void Read_XlsmExcel20()
     {
-        using var stream = Configuration.GetTestWorkbook(Path.Combine("xls", "MACRO1.XLM"));
+        using var stream = Configuration.GetTestWorkbook(Path.Combine("xls", "BIFF2", "MACRO1.XLM"));
         using var reader = OpenReader(stream);
 
         reader.Read();
@@ -1132,12 +1131,184 @@ public class ExcelBinaryReaderTest : ExcelTestBase
     [Test]
     public void GetColumnWidth_BIFF2()
     {
-        using var reader = OpenReader(Path.Combine("xls", "BIFF2_DIMENSIONS"));
+        using var reader = OpenReader(Path.Combine("xls", "BIFF2", "BIFF2_DIMENSIONS"));
         reader.Read();
         Assert.That(reader.GetColumnWidth(0), Is.EqualTo(8.43));
         Assert.That(reader.GetColumnWidth(1), Is.EqualTo(25.00));
         Assert.That(reader.GetColumnWidth(2), Is.EqualTo(25.00));
         Assert.That(reader.GetColumnWidth(3), Is.EqualTo(8.43));
+    }
+
+    [Test]
+    public void GetCellFormula_BIFF2_Constants()
+    {
+        VerifyFormulas(Path.Combine("xls", "BIFF2", "CONSTS.XLS"), Path.Combine("xls", "BIFF2", "CONSTS.txt"));
+    }
+
+    [Test]
+    public void GetCellFormula_BIFF2_Operators()
+    {
+        VerifyFormulas(Path.Combine("xls", "BIFF2", "OPS.XLS"), Path.Combine("xls", "BIFF2", "OPS.txt"));
+    }
+
+    [Test]
+    public void GetCellFormula_BIFF2_DefinedNames()
+    {
+        VerifyFormulas(Path.Combine("xls", "BIFF2", "DEFNAME.XLS"), Path.Combine("xls", "BIFF2", "DEFNAME.txt"));
+    }
+
+    [Test]
+    public void GetCellFormula_BIFF2_ExternalSheetsAndNames()
+    {
+        VerifyFormulas(Path.Combine("xls", "BIFF2", "EXTERN.XLS"), Path.Combine("xls", "BIFF2", "EXTERN.txt"));
+    }
+
+    [Test]
+    public void GetCellFormula_BIFF2_MacroExternalSheetsAndNames()
+    {
+        VerifyFormulas(Path.Combine("xls", "BIFF2", "MACROEXT.XLM"), Path.Combine("xls", "BIFF2", "MACROEXT.txt"));
+    }
+
+    [Test]
+    public void GetCellFormula_Biff_RemoteReference()
+    {
+        VerifyFormulas(Path.Combine("xls", "BIFF2", "RREF.XLS"), Path.Combine("xls", "BIFF2", "RREF.txt"));
+    }
+
+    [Test]
+    public void GetCellFormula_BIFF2_DDE()
+    {
+        VerifyFormulas(Path.Combine("xls", "BIFF2", "DDE.XLS"), Path.Combine("xls", "BIFF2", "DDE.txt"));
+    }
+
+    [Test]
+    public void GetCellFormula_BIFF2_Table()
+    {
+        VerifyFormulas(Path.Combine("xls", "BIFF2", "TABLE.XLS"), Path.Combine("xls", "BIFF2", "TABLE.txt"));
+    }
+
+    [Test]
+    public void GetCellFormula_BIFF2_Functions()
+    {
+        VerifyFormulas(Path.Combine("xls", "BIFF2", "FUNCS.XLS"), Path.Combine("xls", "BIFF2", "FUNCS.txt"));
+    }
+
+    [Test]
+    public void GetCellFormula_BIFF2_Macros()
+    {
+        VerifyFormulas(Path.Combine("xls", "BIFF2", "MACROS.XLM"), Path.Combine("xls", "BIFF2", "MACROS.txt"));
+    }
+
+    [Test]
+    public void GetCellFormula_BIFF2_ArrayCalls()
+    {
+        VerifyFormulas(Path.Combine("xls", "BIFF2", "ARRCALL.XLM"), Path.Combine("xls", "BIFF2", "ARRCALL.txt"));
+    }
+
+    [Test]
+    public void GetCellFormula_BIFF2_Chart()
+    {
+        using var stream = Configuration.GetTestWorkbook(Path.Combine("xls", "BIFF2", "CHART.XLC"));
+        using var reader = OpenReader(stream);
+
+        // Chart sheets do not contain cell formulas
+        while (reader.Read())
+        {
+            for (int i = 0; i < reader.FieldCount; i++)
+            {
+                Assert.That(reader.GetCellFormula(i), Is.Null);
+            }
+        }
+    }
+
+    [Test]
+    public void GetCellNote_BIFF2()
+    {
+        using var stream = Configuration.GetTestWorkbook(Path.Combine("xls", "BIFF2", "NOTES.XLS"));
+        using var reader = OpenReader(stream);
+
+        // First row has notes.
+        reader.Read();
+        Assert.That(reader.GetCellNote(0), Is.Null);
+        Assert.That(reader.GetCellNote(1), Is.EqualTo("Note"));
+
+        // Second row has long note.
+        reader.Read();
+        Assert.That(reader.GetCellNote(0), Is.Null);
+        Assert.That(reader.GetCellNote(1).Length, Is.EqualTo(3583));
+
+        // Third row has no note.
+        reader.Read();
+        Assert.That(reader.GetCellNote(0), Is.Null);
+        Assert.That(reader.GetCellNote(1), Is.Null);
+    }
+
+    [Test]
+    [TestCase("EXCELCBT")]
+    [TestCase("LIBRARY")]
+    [TestCase("Samples")]
+    public void Read_BIFF2SampleFiles(string folder)
+    {
+        foreach (var filePath in Directory.GetFiles(Path.Combine(Configuration.GetTestDataDirectory(), "xls", "BIFF2", folder)))
+        {
+            // This file is corrupt and Excel cannot open it.
+            if (Path.GetFileName(filePath) == "DBREPORT.XLM")
+            {
+                continue;
+            }
+
+            VerifyFile(filePath);
+        }
+    }
+
+    [Test]
+    [TestCase("Samples")]
+    public void Read_BIFF3SampleFiles(string folder)
+    {
+        foreach (var filePath in Directory.GetFiles(Path.Combine(Configuration.GetTestDataDirectory(), "xls", "BIFF3", folder)))
+        {
+            VerifyFile(filePath);
+        }
+    }
+
+    [Test]
+    [TestCase("Samples")]
+    public void Read_BIFF4SampleFiles(string folder)
+    {
+        foreach (var filePath in Directory.GetFiles(Path.Combine(Configuration.GetTestDataDirectory(), "xls", "BIFF4", folder)))
+        {
+            VerifyFile(filePath);
+        }
+    }
+
+    [Test]
+    [TestCase("Samples")]
+    public void Read_BIFF5SampleFiles(string folder)
+    {
+        foreach (var filePath in Directory.GetFiles(Path.Combine(Configuration.GetTestDataDirectory(), "xls", "BIFF5", folder)))
+        {
+            VerifyFile(filePath);
+        }
+    }
+
+    [Test]
+    [TestCase("Samples")]
+    public void Read_BIFF8SampleFiles(string folder)
+    {
+        foreach (var filePath in Directory.GetFiles(Path.Combine(Configuration.GetTestDataDirectory(), "xls", "BIFF8", folder)))
+        {
+            VerifyFile(filePath);
+        }
+    }
+
+    [Test]
+    [TestCase("Samples")]
+    public void Read_BIFF12SampleFiles(string folder)
+    {
+        foreach (var filePath in Directory.GetFiles(Path.Combine(Configuration.GetTestDataDirectory(), "xls", "BIFF12", folder)))
+        {
+            VerifyFile(filePath);
+        }
     }
 
     protected override IExcelDataReader OpenReader(Stream stream, ExcelReaderConfiguration configuration = null)
@@ -1173,5 +1344,75 @@ public class ExcelBinaryReaderTest : ExcelTestBase
         Assert.That(result.Tables[0].Rows[7][2], Is.EqualTo(12.19D));
         Assert.That(result.Tables[0].Rows[8][2], Is.EqualTo(99));
         Assert.That(result.Tables[0].Rows[9][2], Is.EqualTo(1385729.234D));
+    }
+
+    private void VerifyFormulas(string filePath, string expectedFormulasColumnsPath)
+    {
+        using var stream = Configuration.GetTestWorkbook(filePath);
+        using var reader = OpenReader(stream);
+
+        var expectedFormulasColumns = File.ReadAllLines(Configuration.GetTestWorkbookPath(expectedFormulasColumnsPath));
+
+        int rowCount = 0;
+        while (reader.Read())
+        {
+            if (expectedFormulasColumns.Length == rowCount)
+            {
+                break;
+            }
+
+            var expectedFormulasRow = expectedFormulasColumns[rowCount++];
+            if (expectedFormulasRow.StartsWith("[SKIP]"))
+            {
+                continue;
+            }
+
+            var expectedFormulasCells = expectedFormulasRow.Split('\t');
+            
+            for (int colIndex = 0; colIndex < expectedFormulasCells.Length; colIndex++)
+            {
+                var expectedFormula = expectedFormulasCells[colIndex];
+                var formula = reader.GetCellFormula(colIndex + 1);
+
+                if (expectedFormula == string.Empty)
+                {
+                    expectedFormula = null;
+                }
+
+                Assert.That(formula, Is.EqualTo(expectedFormula), $"Formula on row {rowCount}, column {colIndex} does not match.");
+            }
+        }
+    }
+
+    private void VerifyFile(string filePath)
+    {
+        using var stream = Configuration.GetTestWorkbook(filePath);
+        IExcelDataReader reader;
+        try
+        {
+            reader = OpenReader(stream);
+        }
+        catch (HeaderException)
+        {
+            // Not a valid Excel file
+            return;
+        }
+
+        try
+        {
+            while (reader.Read())
+            {
+                // Just read through the file to verify no exceptions are thrown
+                for (int i = 0; i < reader.FieldCount; i++)
+                {
+                    _ = reader.GetValue(i);
+                    _ = reader.GetCellFormula(i);
+                }
+            }
+        }
+        finally
+        {
+            reader.Close();
+        }
     }
 }

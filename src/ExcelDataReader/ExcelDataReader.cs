@@ -200,8 +200,24 @@ internal abstract class ExcelDataReader<TWorkbook, TWorksheet> : IExcelDataReade
     {
         if (RowCells == null)
             throw new InvalidOperationException("No data exists for the row/column.");
-        
+
         return RowCells[i]?.Error;
+    }
+    
+    public string GetCellFormula(int i)
+    {
+        if (RowCells == null)
+            throw new InvalidOperationException("No data exists for the row/column.");
+
+        return RowCells[i]?.Formula;
+    }
+    
+    public string GetCellNote(int i)
+    {
+        if (RowCells == null)
+            throw new InvalidOperationException("No data exists for the row/column.");
+
+        return RowCells[i]?.Note;
     }
 
     /// <inheritdoc />

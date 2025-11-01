@@ -336,3 +336,131 @@ internal enum BIFFRECORDTYPE : ushort
     CRTCLIENT = 0x105C,
     UNKNOWN4352 = 0x1100 // Not documented.
 }
+
+#pragma warning disable CA1712
+internal enum Ptg : byte
+{
+    PtgExp = 0x01,
+    PtgTbl = 0x02,
+    PtgAdd = 0x03,
+    PtgSub = 0x04,
+    PtgMul = 0x05,
+    PtgDiv = 0x06,
+    PtgPower = 0x07,
+    PtgConcat = 0x08,
+    PtgLt = 0x09,
+    PtgLe = 0x0A,
+    PtgEq = 0x0B,
+    PtgGe = 0x0C,
+    PtgGt = 0x0D,
+    PtgNe = 0x0E,
+    PtgIsect = 0x0F,
+    PtgUnion = 0x10,
+    PtgRange = 0x11,
+    PtgUplus = 0x12,
+    PtgUminus = 0x13,
+    PtgPercent = 0x14,
+    PtgParen = 0x15,
+    PtgMissArg = 0x16,
+    PtgStr = 0x17,
+    PtgSheet = 0x1A, // Not documented by MS-XLS. BIFF2-BIFF5 only.
+    PtgEndSheet = 0x1B, // Not documented by MS-XLS. BIFF2-BIFF5 only.
+    PtgErr = 0x1C,
+    PtgBool = 0x1D,
+    PtgInt = 0x1E,
+    PtgNum = 0x1F,
+    PtgArrayR = 0x20,
+    PtgFuncR = 0x21,
+    PtgFuncVarR = 0x22,
+    PtgNameR = 0x23,
+    PtgRefR = 0x24,
+    PtgAreaR = 0x25,
+    PtgMemAreaR = 0x26,
+    PtgMemErrR = 0x27,
+    PtgMemNoMemR = 0x28,
+    PtgMemFuncR = 0x29,
+    PtgRefErrR = 0x2A,
+    PtgAreaErrR = 0x2B,
+    PtgRefNR = 0x2C,
+    PtgAreaNR = 0x2D,
+    PtgMemAreaNR = 0x2E, // Not documented by MS-XLS.
+    PtgMemNoMemNR = 0x2F, // Not documented by MS-XLS.
+    PtgFuncCER = 0x38,
+    PtgNameXR = 0x39,
+    PtgRef3dR = 0x3A,
+    PtgArea3dR = 0x3B,
+    PtgRefErr3dR = 0x3C,
+    PtgAreaErr3dR = 0x3D,
+    PtgArrayV = 0x40,
+    PtgFuncV = 0x41,
+    PtgFuncVarV = 0x42,
+    PtgNameV = 0x43,
+    PtgRefV = 0x44,
+    PtgAreaV = 0x45,
+    PtgMemAreaV = 0x46,
+    PtgMemErrV = 0x47,
+    PtgMemNoMemV = 0x48,
+    PtgMemFuncV = 0x49,
+    PtgRefErrV = 0x4A,
+    PtgAreaErrV = 0x4B,
+    PtgRefNV = 0x4C,
+    PtgAreaNV = 0x4D,
+    PtgMemAreaNV = 0x4E, // Not documented by MS-XLS.
+    PtgMemNoMemNV = 0x4F, // Not documented by MS-XLS.
+    PtgFuncCEV = 0x58,
+    PtgNameXV = 0x59,
+    PtgRef3dV = 0x5A,
+    PtgArea3dV = 0x5B,
+    PtgRefErr3dV = 0x5C,
+    PtgAreaErr3dV = 0x5D,
+    PtgArrayA = 0x60,
+    PtgFuncA = 0x61,
+    PtgFuncVarA = 0x62,
+    PtgNameA = 0x63,
+    PtgRefA = 0x64,
+    PtgAreaA = 0x65,
+    PtgMemAreaA = 0x66,
+    PtgMemErrA = 0x67,
+    PtgMemNoMemA = 0x68,
+    PtgMemFuncA = 0x69,
+    PtgRefErrA = 0x6A,
+    PtgAreaErrA = 0x6B,
+    PtgRefNA = 0x6C,
+    PtgAreaNA = 0x6D,
+    PtgMemAreaNA = 0x6E, // Not documented by MS-XLS.
+    PtgMemNoMemNA = 0x6F, // Not documented by MS-XLS.
+    PtgFuncCEA = 0x78,
+    PtgNameXA = 0x79,
+    PtgRef3dA = 0x7A,
+    PtgArea3dA = 0x7B,
+    PtgRefErr3dA = 0x7C,
+    PtgAreaErr3dA = 0x7D,
+}
+#pragma warning restore CA1712
+
+// [MS-XLS] 2.5.198.2 BErr
+// The BErr structure is a 1 byte unsigned integer that specifies an error.
+// MUST be a value from the following table
+internal enum Berr
+{
+    // #NULL!
+    NULL = 0x00,
+
+    // #DIV/0!
+    DIV0 = 0x07,
+
+    // #VALUE!
+    VALUE = 0x0F,
+
+    // #REF!
+    REF = 0x17,
+
+    // #NAME?
+    NAME = 0x1D,
+
+    // #NUM!
+    NUM = 0x24,
+
+    // #N/A
+    NA = 0x2A
+}

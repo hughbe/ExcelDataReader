@@ -1,0 +1,3 @@
+=Signal|StockInfo!IBM
+=Signal|StockInfo2!IBM
+=Unknown|StockInfo!IBM

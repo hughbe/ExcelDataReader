@@ -264,7 +264,7 @@ internal sealed class XmlWorksheetReader(XmlReader reader, bool preparing) : Xml
             // We only care about columnIndex and if there is any content or not when preparing.
             if (!XmlReaderHelper.ReadFirstContent(Reader))
             {
-                return new CellRecord(columnIndex, 0, null, null);
+                return new CellRecord(columnIndex, 0, null, null, null, null);
             }
 
             while (!Reader.EOF)
@@ -275,7 +275,7 @@ internal sealed class XmlWorksheetReader(XmlReader reader, bool preparing) : Xml
                 }
             }
 
-            return new CellRecord(columnIndex, 0, string.Empty, null);
+            return new CellRecord(columnIndex, 0, string.Empty, null, null, null);
         }
 
         var aS = Reader.GetAttribute(AS);
@@ -291,7 +291,7 @@ internal sealed class XmlWorksheetReader(XmlReader reader, bool preparing) : Xml
 
         if (!XmlReaderHelper.ReadFirstContent(Reader))
         {
-            return new CellRecord(columnIndex, xfIndex, null, null);
+            return new CellRecord(columnIndex, xfIndex, null, null, null, null);
         }
 
         object value = null;
@@ -316,7 +316,7 @@ internal sealed class XmlWorksheetReader(XmlReader reader, bool preparing) : Xml
             }
         }
 
-        return new CellRecord(columnIndex, xfIndex, value, error);
+        return new CellRecord(columnIndex, xfIndex, value, error, null, null);
 
         static void ConvertCellValue(string rawValue, string aT, out object value, out CellError? error)
         {

@@ -96,4 +96,18 @@ public interface IExcelDataReader : IDataReader
     /// <param name="i">The index of the column to find.</param>
     /// <returns>The cell error, or null if no error.</returns>
     CellError? GetCellError(int i);
+
+    /// <summary>
+    /// Gets the cell formula.
+    /// </summary>
+    /// <param name="i">The index of the column to find.</param>
+    /// <returns>The cell formula, or null if no formula.</returns>
+    string GetCellFormula(int i);
+
+    /// <summary>
+    /// Gets the cell note.
+    /// </summary>
+    /// <param name="i">The index of the column to find.</param>
+    /// <returns>The cell note, or null if no note.</returns>
+    string GetCellNote(int i);
 }

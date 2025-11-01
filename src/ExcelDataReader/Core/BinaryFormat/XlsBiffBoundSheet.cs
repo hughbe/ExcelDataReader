@@ -16,17 +16,13 @@ internal sealed class XlsBiffBoundSheet : XlsBiffRecord
         Type = (SheetType)ReadByte(0x5);
         VisibleState = (SheetVisibility)ReadByte(0x4);
 
-        if (biffVersion == 8)
-        {
-            _sheetName = new XlsShortUnicodeString(bytes, ContentOffset + 6);
-        }
-        else if (biffVersion == 5)
+        if (biffVersion <= 5)
         {
             _sheetName = new XlsShortByteString(bytes, ContentOffset + 6);
         }
-        else 
+        else
         {
-            throw new ArgumentException("Unexpected BIFF version " + biffVersion, nameof(biffVersion));
+            _sheetName = new XlsShortUnicodeString(bytes, ContentOffset + 6);
         }
     }
 

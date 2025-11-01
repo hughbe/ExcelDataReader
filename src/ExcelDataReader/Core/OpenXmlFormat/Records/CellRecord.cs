@@ -1,6 +1,6 @@
 ﻿namespace ExcelDataReader.Core.OpenXmlFormat.Records;
 
-internal sealed class CellRecord(int columnIndex, int xfIndex, object value, CellError? error) : Record
+internal sealed class CellRecord(int columnIndex, int xfIndex, object value, CellError? error, string formula, string note) : Record
 {
     public int ColumnIndex { get; } = columnIndex;
 
@@ -9,4 +9,8 @@ internal sealed class CellRecord(int columnIndex, int xfIndex, object value, Cel
     public object Value { get; } = value;
 
     public CellError? Error { get; } = error;
+
+    public string Formula { get; } = formula;
+
+    public string Note { get; } = note;
 }

@@ -148,7 +148,7 @@ internal sealed class XlsxWorksheet : IWorksheet
                 case CellRecord cell when inSheetData:
                     // TODO What if we get a cell without a row?
                     var extendedFormat = Workbook.GetEffectiveCellStyle(cell.XfIndex, 0);
-                    cells.Add(new Cell(cell.ColumnIndex, ConvertCellValue(cell.Value, extendedFormat.NumberFormatIndex), extendedFormat, cell.Error));
+                    cells.Add(new Cell(cell.ColumnIndex, ConvertCellValue(cell.Value, extendedFormat.NumberFormatIndex), extendedFormat, cell.Error, cell.Formula, cell.Note));
                     foundRowOrCell = true;
                     break;
             }

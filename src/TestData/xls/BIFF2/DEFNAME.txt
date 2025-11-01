@@ -1,0 +1,15 @@
+=NAME1
+=Name2
+=NONAME
+=NameWithValueInt
+=NameWithValueNum
+=NameWithValueStr
+
+=NameWithValueBool
+=NameWithArrayInt
+=NameWithArrayNum
+=NameWithArrayStr
+=NameWithArrayBool
+=NameWithDeletedRef
+=NameWithDeletedArea
+=NameWithDeletedBinaryExpression

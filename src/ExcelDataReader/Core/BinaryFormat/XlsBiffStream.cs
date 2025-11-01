@@ -211,6 +211,30 @@ internal sealed class XlsBiffStream : IDisposable
                 return new XlsBiffRKCell(bytes);
             case BIFFRECORDTYPE.MULRK:
                 return new XlsBiffMulRKCell(bytes);
+            case BIFFRECORDTYPE.NOTE:
+                return new XlsBiffNote(bytes, biffVersion);
+            case BIFFRECORDTYPE.EXTERNCOUNT:
+                return new XlsBiffExternalSheetCount(bytes);
+            case BIFFRECORDTYPE.EXTERNSHEET:
+                return new XlsBiffExternalSheet(bytes, biffVersion);
+            case BIFFRECORDTYPE.SUPBOOK:
+                return new XlsBiffSupBook(bytes, biffVersion);
+            case BIFFRECORDTYPE.EXTERNALNAME:
+            case BIFFRECORDTYPE.EXTERNALNAME_V2:
+                return new XlsBiffExternalName(bytes, biffVersion);
+            case BIFFRECORDTYPE.DEFINEDNAME:
+            case BIFFRECORDTYPE.DEFINEDNAME_V2:
+                return new XlsBiffDefinedName(bytes, biffVersion);
+            case BIFFRECORDTYPE.ARRAY:
+            case BIFFRECORDTYPE.ARRAY_V2:
+                return new XlsBiffArray(bytes, biffVersion);
+            case BIFFRECORDTYPE.DATATABLE_V2:
+            case BIFFRECORDTYPE.DATATABLE2:
+            case BIFFRECORDTYPE.DATATABLE:
+                return new XlsBiffDataTable(bytes, biffVersion, id);
+            case BIFFRECORDTYPE.SHAREDFMLA:
+            case BIFFRECORDTYPE.SHAREDFMLA_V2:
+                return new XlsBiffSharedFormula(bytes, biffVersion);
             case BIFFRECORDTYPE.FORMULA:
             case BIFFRECORDTYPE.FORMULA_V3:
             case BIFFRECORDTYPE.FORMULA_V4:
@@ -272,6 +296,13 @@ internal sealed class XlsBiffStream : IDisposable
             case BIFFRECORDTYPE.COLWIDTH: // BIFF2 only.
                 return new XlsBiffColWidth(bytes);
             default:
+#if DEBUG
+                if (!Enum.IsDefined(typeof(BIFFRECORDTYPE), (ushort)id))
+                {
+                    throw new NotImplementedException($"Unsupported BIFF record type: {(ushort)id} (0x{(ushort)id:X4})");
+                }
+#endif
+
                 return new XlsBiffRecord(bytes);
         }
     }

@@ -33,14 +33,18 @@ internal static class Configuration
         return new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
     }
 
-    public static string GetTestWorkbookPath(string key)
+    public static string GetTestDataDirectory()
     {
         var directory = TestContext.CurrentContext.TestDirectory;
         while (directory != null && !File.Exists(Path.Combine(directory, "ExcelDataReader.sln")))
             directory = Path.GetDirectoryName(directory);
 
-        var resources = Path.Combine(directory, "src/TestData");
-        var path = Path.Combine(resources, key);
+        return Path.Combine(directory, "src/TestData");
+    }
+
+    public static string GetTestWorkbookPath(string key)
+    {
+        var path = Path.Combine(GetTestDataDirectory(), key);
         path = Path.GetFullPath(path);
         Assert.That(path, Does.Exist, $"File not found: '{path}'.");
         return path;

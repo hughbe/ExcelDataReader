@@ -57,6 +57,14 @@ internal sealed class XlsWorksheet : IWorksheet
 
     public Encoding Encoding { get; private set; }
 
+    public List<XlsBiffArray> Arrays { get; } = [];
+
+    public List<XlsBiffSharedFormula> SharedFormulas { get; } = [];
+
+    public List<XlsBiffDataTable> DataTables { get; } = [];
+
+    public List<Note> Notes { get; } = [];
+
     public double DefaultRowHeight { get; set; }
 
     public Dictionary<int, XlsRowOffset> RowOffsetMap { get; }
@@ -245,7 +253,7 @@ internal sealed class XlsWorksheet : IWorksheet
 
                     var value = TryConvertOADateTime(rkCell.GetValue(j), effectiveStyle.NumberFormatIndex);
                     LogManager.Log(this).Debug("CELL[{0}] = {1}", j, value);
-                    yield return new Cell(j, value, effectiveStyle, null);
+                    yield return new Cell(j, value, effectiveStyle, null, null, null);
                 }
 
                 break;
@@ -264,6 +272,7 @@ internal sealed class XlsWorksheet : IWorksheet
 
         object value = null;
         CellError? error = null;
+        string formula = null;
         switch (cell.Id)
         {
             case BIFFRECORDTYPE.BOOLERR:
@@ -305,11 +314,66 @@ internal sealed class XlsWorksheet : IWorksheet
             case BIFFRECORDTYPE.FORMULA:
             case BIFFRECORDTYPE.FORMULA_V3:
             case BIFFRECORDTYPE.FORMULA_V4:
-                value = TryGetFormulaValue(biffStream, (XlsBiffFormulaCell)cell, effectiveStyle, out error);
+                var formulaCell = (XlsBiffFormulaCell)cell;
+
+                // The formula record may have an ARRAY, DATATABLE, DATATABLE2 or SHAREDFMLA
+                // record associated with this formula.
+                // These records immediately following the formula cell in the file and are
+                // described only once per table, not per formula cell.
+                int offset = biffStream.Position;
+                try
+                {
+                    var record = biffStream.Read();
+                    if (record is XlsBiffArray arrayRecord)
+                    {
+                        Arrays.Add(arrayRecord);
+                        while (biffStream.Read() is XlsBiffContinue)
+                        {
+                            throw new NotSupportedException("Continued ARRAY records are not supported.");
+                        }
+                    }
+                    else if (record is XlsBiffSharedFormula sharedFormulaRecord)
+                    {
+                        SharedFormulas.Add(sharedFormulaRecord);
+                    }
+                    else if (record is XlsBiffDataTable dataTableRecord)
+                    {
+                        DataTables.Add(dataTableRecord);
+                    }
+                }
+                finally
+                {
+                    biffStream.Position = offset;
+                }
+
+                value = TryGetFormulaValue(biffStream, formulaCell, effectiveStyle, out error);
+                var context = new XlsFormulaReaderContext
+                {
+                    DefinedNames = Workbook.DefinedNames,
+                    ExternalSheets = Workbook.ExternalSheets,
+                    ExternalWorkbooks = Workbook.ExternalWorkbooks,
+                    ExternalNames = Workbook.ExternalNames,
+                    Arrays = Arrays,
+                    DataTables = DataTables,
+                    SharedFormulas = SharedFormulas,
+                    Sheets = Workbook.Sheets,
+                    Encoding = Encoding
+                };
+                formula = formulaCell.GetFormulaString(context);
                 break;
+            }
+
+        Note foundNote = null;
+        foreach (var note in Notes)
+        {
+            if (note.RowIndex == cell.RowIndex && note.ColumnIndex == cell.ColumnIndex)
+            {
+                foundNote = note;
+                break;
+            }
         }
 
-        return new Cell(cell.ColumnIndex, value, effectiveStyle, error);
+        return new Cell(cell.ColumnIndex, value, effectiveStyle, error, formula, foundNote?.Text);
     }
 
     private string GetLabelString(XlsBiffLabelCell cell, ExtendedFormat effectiveStyle)
@@ -434,7 +498,7 @@ internal sealed class XlsWorksheet : IWorksheet
         using var biffStream = new XlsBiffStream(Stream, (int)DataOffset, Workbook.BiffVersion, BIFFTYPE.Worksheet, secretKey: Workbook.SecretKey, encryption: Workbook.Encryption);
 
         // Check the expected BOF record was found in the BIFF stream
-        if (biffStream.BiffVersion == 0 || (biffStream.BiffType != BIFFTYPE.Worksheet && biffStream.BiffType != BIFFTYPE.MacroSheet))
+        if (biffStream.BiffVersion == 0 || (biffStream.BiffType != BIFFTYPE.Worksheet && biffStream.BiffType != BIFFTYPE.Chart && biffStream.BiffType != BIFFTYPE.MacroSheet))
             return;
 
         XlsBiffHeaderFooterString header = null;
@@ -534,6 +598,44 @@ internal sealed class XlsWorksheet : IWorksheet
                     break;
                 case { Id: BIFFRECORDTYPE.IXFE }:
                     ixfeOffset = recordOffset;
+                    break;
+
+                case XlsBiffExternalSheet externalSheet:
+                    // In BIFF2-5, external sheet references are stored on the 
+                    // worksheet level.
+                    // In BIFF8+, external sheet references are stored on the 
+                    // workbook level.
+                    Workbook.ExternalSheets.Add(externalSheet);
+                    break;
+
+                case XlsBiffExternalName externalName:
+                    // In BIFF2-5, external names are stored on the worksheet level.
+                    // In BIFF8+, external names are stored on the workbook level.
+                    Workbook.ExternalNames.Add(externalName);
+                    break;
+
+                case XlsBiffDefinedName definedName:
+                    // In BIFF2-4, defined names are stored on the worksheet level.
+                    // In BIFF5+, defined names are stored on the workbook level.
+                    Workbook.DefinedNames.Add(definedName);
+                    break;
+
+                case XlsBiffNote note:
+                    if (note.RowIndex != 0xFFFF)
+                    {
+                        // This is a new note with text.
+                        Notes.Add(new Note(note.RowIndex, note.ColumnIndex, note.GetText(Encoding)));
+                    }
+                    else
+                    {
+                        // This is a continuation of the previous note's text.
+                        var lastNote = Notes.Count > 0 ? Notes[^1] : null;
+                        if (lastNote != null)
+                        {
+                            lastNote.Text += note.GetText(Encoding);
+                        }
+                    }
+                    
                     break;
             }
 

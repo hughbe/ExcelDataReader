@@ -1,0 +1,14 @@
+
+
+{=TABLE(F2,F3)}	{=TABLE(F2,F3)}
+{=TABLE(F2,F3)}	{=TABLE(F2,F3)}
+
+
+{=TABLE(G3,)}	{=TABLE(G3,)}	{=TABLE(G3,)}
+{=TABLE(G3,)}	{=TABLE(G3,)}	{=TABLE(G3,)}
+{=TABLE(G3,)}	{=TABLE(G3,)}	{=TABLE(G3,)}
+{=TABLE(G3,)}	{=TABLE(G3,)}	{=TABLE(G3,)}
+{=TABLE(G3,)}	{=TABLE(G3,)}	{=TABLE(G3,)}
+{=TABLE(G3,)}	{=TABLE(G3,)}	{=TABLE(G3,)}
+
+{=TABLE(F14,G14)}

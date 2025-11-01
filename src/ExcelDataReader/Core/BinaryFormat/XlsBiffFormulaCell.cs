@@ -1,3 +1,6 @@
+using System.Globalization;
+using System.Text;
+
 namespace ExcelDataReader.Core.BinaryFormat;
 
 /// <summary>
@@ -109,6 +112,33 @@ internal sealed class XlsBiffFormulaCell : XlsBiffBlankCell
     }
     */
 
+    public string GetFormulaString(XlsFormulaReaderContext context)
+    {
+        // [MS-XLS] 2.5.198.3 CellParsedFormula
+        // The CellParsedFormula structure specifies a formula (section 2.2.2) stored
+        // in a cell.
+
+        // For BIFF2, the rgce starts at offset 0x10.
+        // For BIFF5 and later, the rgce starts at offset 0x14.
+        int offset = _biffVersion < 5 ? 0x10 : 0x14;
+        int cce;
+        if (_biffVersion == 2)
+        {
+            // In BIFF2, cce is a single byte.
+            cce = ReadByte(offset);
+            offset += 1;
+        }
+        else
+        {
+            // cce (2 bytes): An unsigned integer that specifies the length of
+            // rgce in bytes. MUST be greater than 0.
+            cce = ReadUInt16(offset);
+            offset += 2;
+        }
+
+        return XlsFormulaReader.ReadFormulaString(this, _biffVersion, offset, cce, offset + cce, context);
+    }
+
     private void LazyInit()
     {
         if (_initialized)
@@ -124,7 +154,14 @@ internal sealed class XlsBiffFormulaCell : XlsBiffBlankCell
         else
         {
             // _flags = (FormulaFlags)ReadUInt16(0xE);
+
+            // fExprO (2 bytes): If fExprO is 0xFFFF, this structure specifies
+            // a Boolean value, an error value, a string value, or a blank string value. If fExprO is not 0xFFFF, fExprO specifies the last two bytes of the Xnum.
             var formulaValueExprO = ReadUInt16(0xC);
+
+            // byte1 (1 byte):  If fExprO is 0xFFFF, byte1 is an unsigned integer
+            // that specifies the formula value type and MUST be a value from the
+            // following table:
             if (formulaValueExprO != 0xFFFF)
             {
                 _formulaType = FormulaValueType.Number;
@@ -132,8 +169,33 @@ internal sealed class XlsBiffFormulaCell : XlsBiffBlankCell
             }
             else
             {
-                // var formulaLength = ReadByte(0xF);
+                // byte1 (1 byte):  If fExprO is 0xFFFF, byte1 is an unsigned
+                // integer that specifies the formula value type and MUST be
+                // a value from the following table:
+                // 0x00
+                // - String value. The string value is stored in a String
+                // record that immediately follows this record.
+                // 0x01
+                // - Boolean value.
+                // 0x02
+                // - Error value.
+                // 0x03
+                // - Blank string value.
+                // If fExprO is not 0xFFFF, byte1 specifies the first byte of the Xnum.
                 var formulaValueByte1 = ReadByte(0x6);
+
+                // byte3 (1 byte):  The meaning of byte3 is specified
+                // in the following table:
+                // fExprO is 0xFFFF and byte1 is 0x00
+                // - byte3 is undefined and MUST be ignored.
+                // fExprO is 0xFFFF and byte1 is 0x01
+                // - byte3 specifies a Boolean value.
+                // fExprO is 0xFFFF and byte1 is 0x02
+                // - byte3 specifies a BErr.
+                // fExprO is 0xFFFF and byte1 is 0x03
+                // - byte3 is undefined and MUST be ignored.
+                // fExprO is not 0xFFFF
+                // - byte3 specifies the third byte of the Xnum.
                 var formulaValueByte3 = ReadByte(0x8);
                 switch (formulaValueByte1)
                 {
