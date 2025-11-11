@@ -1093,9 +1093,10 @@ public class ExcelBinaryReaderTest : ExcelTestBase
         Assert.That(dataSet.Tables[0].TableName, Is.EqualTo("List1"));
     }
 
+    [Test]
     public void Read_XlsExcel20()
     {
-        using var stream = Configuration.GetTestWorkbook(Path.Combine("xls", "SIMPLE.XLS"));
+        using var stream = Configuration.GetTestWorkbook(Path.Combine("xls", "BIFF2", "SIMPLE.XLS"));
         using var reader = OpenReader(stream);
 
         reader.Read();
@@ -1190,13 +1191,22 @@ public class ExcelBinaryReaderTest : ExcelTestBase
     [Test]
     public void GetCellFormula_BIFF2_Functions()
     {
+        // All functions supported in Excel 2.0 for Windows.
         VerifyFormulas(Path.Combine("xls", "BIFF2", "FUNCS.XLS"), Path.Combine("xls", "BIFF2", "FUNCS.txt"));
     }
 
     [Test]
     public void GetCellFormula_BIFF2_Macros()
     {
+        // All macros and functions supported in Excel 2.0 for Windows.
         VerifyFormulas(Path.Combine("xls", "BIFF2", "MACROS.XLM"), Path.Combine("xls", "BIFF2", "MACROS.txt"));
+    }
+
+    [Test]
+    public void GetCellFormula_BIFF2_MacrosExcel22()
+    {
+        // New formulae in Excel 2.2 for Mac.
+        VerifyFormulas(Path.Combine("xls", "BIFF2", "Excel 2.2 Mac Macros.xlm"), Path.Combine("xls", "BIFF2", "Excel 2.2 Mac Macros.txt"));
     }
 
     [Test]

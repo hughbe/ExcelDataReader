@@ -10,7 +10,7 @@ internal static class XlsFormulaReader
     private static readonly Dictionary<ushort, (string, int?)> FtabFunctionNames = new Dictionary<ushort, (string, int?)>
     {
         { 0x0000, ("COUNT", null) },
-        { 0x0001, ("IF", 3) },
+        { 0x0001, ("IF", null) },
         { 0x0002, ("ISNA", 1) },
         { 0x0003, ("ISERROR", 1) },
         { 0x0004, ("SUM", null) },
@@ -64,7 +64,7 @@ internal static class XlsFormulaReader
         { 0x0034, ("GROWTH", null) },
         { 0x0035, ("GOTO", 1) },
         { 0x0036, ("HALT", 0) },
-        { 0x0037, ("RETURN", 0) },
+        { 0x0037, ("RETURN", null) },
         { 0x0038, ("PV", null) },
         { 0x0039, ("FV", null) },
         { 0x003A, ("NPER", null) },
@@ -111,7 +111,7 @@ internal static class XlsFormulaReader
         { 0x0063, ("ACOS", 1) },
         { 0x0064, ("CHOOSE", null) },
         { 0x0065, ("HLOOKUP", 3) },
-        { 0x0066, ("VLOOKUP", 3) },
+        { 0x0066, ("VLOOKUP", 3) }, // Has both fixed and variable parameter counts.
         { 0x0067, ("LINKS", null) },
         { 0x0068, ("INPUT", null) },
         { 0x0069, ("ISREF", 1) },
@@ -153,7 +153,7 @@ internal static class XlsFormulaReader
         { 0x008D, ("TIMEVALUE", 1) },
         { 0x008E, ("SLN", 3) },
         { 0x008F, ("SYD", 4) },
-        { 0x0090, ("DDB", 4) },
+        { 0x0090, ("DDB", 4) }, // Has both fixed and variable parameter counts.
         { 0x0091, ("GET.DEF", null) },
         { 0x0092, ("REFTEXT", null) },
         { 0x0093, ("TEXTREF", null) },
@@ -177,7 +177,7 @@ internal static class XlsFormulaReader
         { 0x00A5, ("MMULT", 2) },
         { 0x00A6, ("FILES", null) },
         { 0x00A7, ("IPMT", null) },
-        { 0x00A8, ("PPMT", 1) },
+        { 0x00A8, ("PPMT", null) },
         { 0x00A9, ("COUNTA", null) },
         { 0x00AA, ("CANCEL.KEY", null) },
         { 0x00AB, ("FOR", null) },
@@ -201,15 +201,16 @@ internal static class XlsFormulaReader
         { 0x00BD, ("DPRODUCT", 3) },
         { 0x00BE, ("ISNONTEXT", 1) },
         { 0x00BF, ("GET.NOTE", null) },
-        { 0x00C0, ("NOTE", 2) },
+        { 0x00C0, ("NOTE", null) },
         { 0x00C1, ("STDEVP", null) },
         { 0x00C2, ("VARP", null) },
         { 0x00C3, ("DSTDEVP", 3) },
         { 0x00C4, ("DVARP", 3) },
-        { 0x00C5, ("TRUNC", 1) },
+        { 0x00C5, ("TRUNC", 1) }, // Has both fixed and variable parameter counts.
         { 0x00C6, ("ISLOGICAL", 1) },
         { 0x00C7, ("DCOUNTA", 3) },
         { 0x00C8, ("DELETE.BAR", 1) },
+        { 0x00C9, ("UNREGISTER", 1) }, // Mac only.
         { 0x00CC, ("USDOLLAR", null) },
         { 0x00CD, ("FINDB", null) },
         { 0x00CE, ("SEARCHB", null) },
@@ -457,6 +458,9 @@ internal static class XlsFormulaReader
         { 0x00B9, "MAIN.CHART.TYPE" },
         { 0x00BA, "OVERLAY.CHART.TYPE" },
         { 0x00BB, "SELECT.END" },
+        { 0x00BC, "OPEN.MAIL" }, // Mac only.
+        { 0x00BD, "SEND.MAIL" }, // Mac only.
+        { 0x00BE, "STANDARD.FONT" }, // Mac only.
     };
 
     public static string ReadFormulaString(XlsBiffRecord record, int biffVersion, int offset, int cce, int rgbExtraOffset, XlsFormulaReaderContext context)
@@ -918,6 +922,10 @@ internal static class XlsFormulaReader
 
     private static void PushMacroCommandCall(ushort ctab, Stack<string> operands, byte cparams)
     {
+        // [MS-XLS] 2.5.198.4 Cetab
+        // The Cetab structure specifies a function that can be called from a formula
+        // (section 2.2.2). The definition of each function specifies the function
+        // name and the valid sequence of arguments.
         if (!MacroCommandNames.TryGetValue(ctab, out var macroName))
         {
             throw new NotSupportedException($"Macro command 0x{ctab:X2} not supported in formula string parsing.");
@@ -2427,7 +2435,7 @@ internal static class XlsFormulaReader
                 break;
 
             case 0x02:
-                read = PtgAttrIf(record, biffVersion, offset, read);
+                read = ParsePtgAttrIf(record, biffVersion, offset, read);
                 break;
 
             case 0x04:
@@ -2477,7 +2485,7 @@ internal static class XlsFormulaReader
         return read;
     }
 
-    private static int PtgAttrIf(XlsBiffRecord record, int biffVersion, int offset, int read)
+    private static int ParsePtgAttrIf(XlsBiffRecord record, int biffVersion, int offset, int read)
     {
         // [MS-XLS] 2.5.198.36 PtgAttrIf
         // The PtgAttrIf structure specifies a control token.
