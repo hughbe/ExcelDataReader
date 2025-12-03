@@ -198,6 +198,13 @@ internal static class XlsBiffEncodedUrl
             isSelf = true;
             return encodedUrl.Replace('\x03', '|');
         }
+        else if (chFirst == '\x04')
+        {
+            // Reference to the own workbook, sheet is unspecified
+            // (nothing will follow)
+            isSelf = true;
+            return string.Empty;
+        }
         else
         {
             // No special encoding.

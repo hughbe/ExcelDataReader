@@ -211,26 +211,28 @@ internal static class XlsFormulaReader
         { 0x00C7, ("DCOUNTA", 3) },
         { 0x00C8, ("DELETE.BAR", 1) },
         { 0x00C9, ("UNREGISTER", 1) }, // Mac only.
-        { 0x00CC, ("USDOLLAR", null) },
-        { 0x00CD, ("FINDB", null) },
-        { 0x00CE, ("SEARCHB", null) },
-        { 0x00CF, ("REPLACEB", 4) },
-        { 0x00D0, ("LEFTB", null) },
-        { 0x00D1, ("RIGHTB", null) },
-        { 0x00D2, ("MIDB", 3) },
-        { 0x00D3, ("LENB", 1) },
-        { 0x00D4, ("ROUNDUP", 2) },
-        { 0x00D5, ("ROUNDDOWN", 2) },
-        { 0x00D6, ("ASC", 1) },
-        { 0x00D7, ("DBCS", 1) },
+
+        // Excel 3.0
+        { 0x00CC, ("USDOLLAR", null) }, // Renamed from YEN. Excel 4.0 for Mac.
+        { 0x00CD, ("FINDB", null) }, // Excel 4.0 for Mac.
+        { 0x00CE, ("SEARCHB", null) }, // Excel 4.0 for Mac.
+        { 0x00CF, ("REPLACEB", 4) }, // Excel 4.0 for Mac.
+        { 0x00D0, ("LEFTB", null) }, // Excel 4.0 for Mac.
+        { 0x00D1, ("RIGHTB", null) }, // Excel 4.0 for Mac.
+        { 0x00D2, ("MIDB", 3) }, // Excel 4.0 for Mac.
+        { 0x00D3, ("LENB", 1) }, // Excel 4.0 for Mac.
+        { 0x00D4, ("ROUNDUP", 2) }, // Excel 4.0 for Mac.
+        { 0x00D5, ("ROUNDDOWN", 2) }, // Excel 4.0 for Mac.
+        { 0x00D6, ("ASC", 1) }, // Excel 4.0 for Mac.
+        { 0x00D7, ("DBCS", 1) }, // Renamed from JIS. Excel 4.0 for Mac.
         { 0x00D8, ("RANK", null) },
         { 0x00DB, ("ADDRESS", null) },
-        { 0x00DC, ("DAYS360", null) },
+        { 0x00DC, ("DAYS360", 2) },
         { 0x00DD, ("TODAY", 0) },
         { 0x00DE, ("VDB", null) },
         { 0x00DF, ("ELSE", 0) },
         { 0x00E0, ("ELSE.IF", 1) },
-        { 0x00E1, ("END.IF", 1) },
+        { 0x00E1, ("END.IF", 0) },
         { 0x00E2, ("FOR.CELL", null) },
         { 0x00E3, ("MEDIAN", null) },
         { 0x00E4, ("SUMPRODUCT", null) },
@@ -242,7 +244,7 @@ internal static class XlsFormulaReader
         { 0x00EA, ("ATANH", 1) },
         { 0x00EB, ("DGET", 3) },
         { 0x00EC, ("CREATE.OBJECT", null) },
-        { 0x00ED, ("VOLATILE", null) },
+        { 0x00ED, ("VOLATILE", 0) },
         { 0x00EE, ("LAST.ERROR", 0) },
         { 0x00EF, ("CUSTOM.UNDO", null) },
         { 0x00F0, ("CUSTOM.REPEAT", null) },
@@ -252,15 +254,17 @@ internal static class XlsFormulaReader
         { 0x00F4, ("INFO", 1) },
         { 0x00F5, ("GROUP", 0) },
         { 0x00F6, ("GET.OBJECT", null) },
+
+        // Excel 4.0
         { 0x00F7, ("DB", null) },
         { 0x00F8, ("PAUSE", null) },
         { 0x00FB, ("RESUME", null) },
-        { 0x00FC, ("FREQUENCY", null) },
+        { 0x00FC, ("FREQUENCY", 2) },
         { 0x00FD, ("ADD.TOOLBAR", null) },
-        { 0x00FE, ("DELETE.TOOLBAR", null) },
+        { 0x00FE, ("DELETE.TOOLBAR", 1) },
         { 0x00FF, ("USERDEFINED", null) },
-        { 0x0100, ("RESET.TOOLBAR", null) },
-        { 0x0101, ("EVALUATE", null) },
+        { 0x0100, ("RESET.TOOLBAR", 1) },
+        { 0x0101, ("EVALUATE", 1) },
         { 0x0102, ("GET.TOOLBAR", null) },
         { 0x0103, ("GET.TOOL", null) },
         { 0x0104, ("SPELLING.CHECK", null) },
@@ -268,27 +272,92 @@ internal static class XlsFormulaReader
         { 0x0106, ("APP.TITLE", null) },
         { 0x0107, ("WINDOW.TITLE", null) },
         { 0x0108, ("SAVE.TOOLBAR", null) },
-        { 0x0109, ("ENABLE.TOOL", null) },
-        { 0x010A, ("PRESS.TOOL", null) },
+        { 0x0109, ("ENABLE.TOOL", 3) },
+        { 0x010A, ("PRESS.TOOL", 3) },
         { 0x010B, ("REGISTER.ID", null) },
         { 0x010C, ("GET.WORKBOOK", null) },
         { 0x010D, ("AVEDEV", null) },
         { 0x010E, ("BETADIST", null) },
-        { 0x010F, ("GAMMALN", null) },
+        { 0x010F, ("GAMMALN", 1) },
         { 0x0110, ("BETAINV", null) },
-        { 0x0111, ("BINOMDIST", null) },
-        { 0x0112, ("CHIDIST", null) },
-        { 0x0113, ("CHIINV", null) },
-        { 0x0114, ("COMBIN", null) },
-        { 0x0115, ("CONFIDENCE", null) },
-        { 0x0116, ("CRITBINOM", null) },
-        { 0x0117, ("EVEN", null) },
+        { 0x0111, ("BINOMDIST", 4) },
+        { 0x0112, ("CHIDIST", 2) },
+        { 0x0113, ("CHIINV", 2) },
+        { 0x0114, ("COMBIN", 2) },
+        { 0x0115, ("CONFIDENCE", 3) },
+        { 0x0116, ("CRITBINOM", 3) },
+        { 0x0117, ("EVEN", 1) },
+        { 0x0118, ("EXPONDIST", 3) },
+        { 0x0119, ("FDIST", 3) },
+        { 0x011A, ("FINV", 3) },
+        { 0x011B, ("FISHER", 1) },
+        { 0x011C, ("FISHERINV", 1) },
+        { 0x011D, ("FLOOR", 2) },
+        { 0x011E, ("GAMMADIST", 4) },
+        { 0x011F, ("GAMMAINV", 3) },
+        { 0x0120, ("CEILING", 2) },
+        { 0x0121, ("HYPGEOMDIST", 4) },
+        { 0x0122, ("LOGNORMDIST", 3) },
+        { 0x0123, ("LOGINV", 3) },
+        { 0x0124, ("NEGBINOMDIST", 3) },
+        { 0x0125, ("NORMDIST", 4) },
+        { 0x0126, ("NORMSDIST", 1) },
+        { 0x0127, ("NORMINV", 3) },
+        { 0x0128, ("NORMSINV", 1) },
+        { 0x0129, ("STANDARDIZE", 3) },
+        { 0x012A, ("ODD", 1) },
+        { 0x012B, ("PERMUT", 2) },
+        { 0x012C, ("POISSON", 3) },
+        { 0x012D, ("TDIST", 3) },
+        { 0x012E, ("WEIBULL", 4) },
+        { 0x012F, ("SUMXMY2", 2) },
+        { 0x0130, ("SUMX2MY2", 2) },
+        { 0x0131, ("SUMX2PY2", 2) },
+        { 0x0132, ("CHITEST", 2) },
+        { 0x0133, ("CORREL", 2) },
+        { 0x0134, ("COVAR", 2) },
+        { 0x0135, ("FORECAST", 3) },
+        { 0x0136, ("FTEST", 2) },
+        { 0x0137, ("INTERCEPT", 2) },
+        { 0x0138, ("PEARSON", 2) },
+        { 0x0139, ("RSQ", 2) },
+        { 0x013A, ("STEYX", 2) },
+        { 0x013B, ("SLOPE", 2) },
+        { 0x013C, ("TTEST", 4) },
+        { 0x013D, ("PROB", null) },
+        { 0x013E, ("DEVSQ", null) },
+        { 0x013F, ("GEOMEAN", null) },
+        { 0x0140, ("HARMEAN", null) },
+        { 0x0141, ("SUMSQ", null) },
+        { 0x0142, ("KURT", null) },
+        { 0x0143, ("SKEW", null) },
+        { 0x0144, ("ZTEST", null) },
+        { 0x0145, ("LARGE", 2) },
+        { 0x0146, ("SMALL", 2) },
+        { 0x0147, ("QUARTILE", 2) },
+        { 0x0148, ("PERCENTILE", 2) },
+        { 0x0149, ("PERCENTRANK", null) },
+        { 0x014A, ("MODE", null) },
+        { 0x014B, ("TRIMMEAN", 2) },
+        { 0x014C, ("TINV", 2) },
+
+        // Excel 5.0
+        { 0x014E, ("MOVIE.COMMAND", null) }, // Unknown.
+        { 0x014F, ("GET.MOVIE", null) }, // Unknown.
         { 0x0150, ("CONCATENATE", null) },
+        { 0x0151, ("POWER", 2) },
+        { 0x0152, ("PIVOT.ADD.DATA", null) },
+        { 0x0153, ("GET.PIVOT.TABLE", null) },
+        { 0x0154, ("GET.PIVOT.FIELD", null) },
+        { 0x0155, ("GET.PIVOT.ITEM", null) },
+        { 0x0156, ("RADIANS", 1) },
+        { 0x0157, ("DEGREES", 1) },
+        { 0x0158, ("SUBTOTAL", null) },
         { 0x0159, ("SUMIF", null) },
         { 0x015A, ("COUNTIF", 2) },
         { 0x015B, ("COUNTBLANK", 1) },
         { 0x015C, ("SCENARIO.GET", null) },
-        { 0x015D, ("OPTIONS.LISTS.GET", null) },
+        { 0x015D, ("OPTIONS.LISTS.GET", 1) },
         { 0x015E, ("ISPMT", 4) },
         { 0x015F, ("DATEDIF", 3) },
         { 0x0160, ("DATESTRING", 1) },
@@ -296,6 +365,8 @@ internal static class XlsFormulaReader
         { 0x0162, ("ROMAN", null) },
         { 0x0163, ("OPEN.DIALOG", null) },
         { 0x0164, ("SAVE.DIALOG", null) },
+
+        // BIFF 8
         { 0x0165, ("VIEW.GET", null) },
         { 0x0166, ("GETPIVOTDATA", null) },
         { 0x0167, ("HYPERLINK", null) },
@@ -386,6 +457,7 @@ internal static class XlsFormulaReader
         { 0x0057, "SCALE" },
         { 0x0058, "FORMAT.LEGEND" },
         { 0x0059, "FORMAT.TEXT" },
+        { 0x005A, "EDIT.REPEAT" }, // Excel 3.0
         { 0x005B, "PARSE" },
         { 0x005C, "JUSTIFY" },
         { 0x005D, "HIDE" },
@@ -435,6 +507,7 @@ internal static class XlsFormulaReader
         { 0x008A, "ON.WINDOW" },
         { 0x008B, "ON.DATA" },
         { 0x008C, "DISABLE.INPUT" },
+        { 0x008E, "OUTLINE" }, // Excel 3.0
         { 0x008F, "LIST.NAMES" },
         { 0x0090, "FILE.CLOSE" },
         { 0x0091, "SAVE.WORKSPACE" },
@@ -446,7 +519,13 @@ internal static class XlsFormulaReader
         { 0x0097, "FILL.UP" },
         { 0x0098, "FILL.LEFT" },
         { 0x0099, "DELETE.OVERLAY" },
+        { 0x009A, "NOTE" }, // =NOTE?(). Excel 3.0. Not documented.
         { 0x009B, "SHORT.MENUS" },
+        { 0x009F, "SET.UPDATE.STATUS" }, // Excel 3.0.
+        { 0x00A1, "COLOR.PALETTE" }, // Excel 3.0.
+        { 0x00A2, "DELETE.STYLE" }, // Excel 3.0.
+        { 0x00A3, "WINDOW.RESTORE" }, // Excel 4.0.
+        { 0x00A4, "WINDOW.MAXIMIZE" }, // Excel 4.0.
         { 0x00A6, "CHANGE.LINK" },
         { 0x00A7, "CALCULATE.DOCUMENT" },
         { 0x00A8, "ON.KEY" },
@@ -455,12 +534,220 @@ internal static class XlsFormulaReader
         { 0x00AB, "APP.SIZE" },
         { 0x00AC, "APP.MINIMIZE" },
         { 0x00AD, "APP.MAXIMIZE" },
+        { 0x00AE, "BRING.TO.FRONT" },
+        { 0x00AF, "SEND.TO.BACK" },
         { 0x00B9, "MAIN.CHART.TYPE" },
         { 0x00BA, "OVERLAY.CHART.TYPE" },
-        { 0x00BB, "SELECT.END" },
-        { 0x00BC, "OPEN.MAIL" }, // Mac only.
-        { 0x00BD, "SEND.MAIL" }, // Mac only.
-        { 0x00BE, "STANDARD.FONT" }, // Mac only.
+        { 0x00BB, "SELECT.END" }, // Excel 2.0.
+        { 0x00BC, "OPEN.MAIL" }, // Excel 2.2. Mac only.
+        { 0x00BD, "SEND.MAIL" }, // Excel 2.2. Mac only.
+        { 0x00BE, "STANDARD.FONT" }, // Excel 2.2. Mac only.
+        
+        // Excel 3.0
+        { 0x00BF, "CONSOLIDATE" },
+        { 0x00C0, "SORT.SPECIAL" }, // Unknown.
+        { 0x00C1, "GALLERY.3D.AREA" },
+        { 0x00C2, "GALLERY.3D.COLUMN" },
+        { 0x00C3, "GALLERY.3D.LINE" },
+        { 0x00C4, "GALLERY.3D.PIE" },
+        { 0x00C5, "VIEW.3D" },
+        { 0x00C6, "GOAL.SEEK" },
+        { 0x00C7, "WORKGROUP" },
+        { 0x00C8, "FILL.WORKGROUP" }, // Excel 3.0. From Excel 4.0 this is "FILL.GROUP".
+        { 0x00C9, "UPDATE.LINK" },
+        { 0x00CA, "PROMOTE" },
+        { 0x00CB, "DEMOTE" },
+        { 0x00CC, "SHOW.DETAIL" },
+        { 0x00CE, "UNGROUP" },
+        { 0x00CF, "PLACEMENT" }, // Excel 3.0. From Excel 4.0 this is "OBJECT.PROPERTIES".
+        { 0x00D0, "SAVE.NEW.OBJECT" },
+        { 0x00D1, "SHARE" },
+        { 0x00D2, "SHARE.NAME" },
+        { 0x00D3, "DUPLICATE" },
+        { 0x00D4, "APPLY.STYLE" },
+        { 0x00D5, "ASSIGN.TO.OBJECT" },
+        { 0x00D6, "OBJECT.PROTECTION" },
+        { 0x00D7, "HIDE.OBJECT" },
+        { 0x00D8, "SET.EXTRACT" },
+        { 0x00D9, "CREATE.PUBLISHER" },
+        { 0x00DA, "SUBSCRIBE.TO" },
+        { 0x00DB, "ATTRIBUTES" },
+        { 0x00DC, "SHOW.TOOLBAR" }, // Unknown.
+        { 0x00DE, "PRINT.PREVIEW" },
+        { 0x00DF, "EDIT.COLOR" },
+        { 0x00E0, "SHOW.LEVELS" },
+        { 0x00E1, "FORMAT.MAIN" },
+        { 0x00E2, "FORMAT.OVERLAY" },
+        { 0x00E3, "ON.RECALC" },
+        { 0x00E4, "EDIT.SERIES" },
+        { 0x00E5, "DEFINE.STYLE" },
+        { 0x00F0, "LINE.PRINT" }, // Unknown.
+        { 0x00F3, "ENTER.DATA" }, // Unknown.
+        { 0x00F9, "GALLERY.RADAR" }, // Unknown.
+        { 0x00FA, "MERGE.STYLES" },
+        { 0x00FB, "EDITION.OPTIONS" },
+        { 0x00FC, "PASTE.PICTURE" },
+        { 0x00FD, "PASTE.PICTURE.LINK" },
+
+        // Excel 4.0
+        { 0x00FE, "SPELLING" },
+        { 0x0100, "ZOOM" },
+        { 0x0103, "INSERT.OBJECT" },
+        { 0x0104, "WINDOW.MINIMIZE" },
+        { 0x0109, "SOUND.NOTE" },
+        { 0x010A, "SOUND.PLAY" },
+        { 0x010B, "FORMAT.SHAPE" },
+        { 0x010C, "EXTEND.POLYGON" },
+        { 0x010D, "FORMAT.AUTO" },
+        { 0x0110, "GALLERY.3D.BAR" },
+        { 0x0111, "GALLERY.3D.SURFACE" },
+        { 0x0112, "FILL.AUTO" },
+        { 0x0114, "CUSTOMIZE.TOOLBAR" },
+        { 0x0115, "ADD.TOOL" },
+        { 0x0116, "EDIT.OBJECT" },
+        { 0x0117, "ON.DOUBLECLICK" },
+        { 0x0118, "ON.ENTRY" },
+        { 0x0119, "WORKBOOK.ADD" },
+        { 0x011A, "WORKBOOK.MOVE" },
+        { 0x011B, "WORKBOOK.COPY" },
+        { 0x011C, "WORKBOOK.OPTIONS" },
+        { 0x011D, "SAVE.WORKSPACE" },
+        { 0x0120, "CHART.WIZARD" },
+        { 0x0121, "DELETE.TOOL" },
+        { 0x0122, "MOVE.TOOL" },
+        { 0x0123, "WORKBOOK.SELECT" },
+        { 0x0124, "WORKBOOK.ACTIVATE" },
+        { 0x0125, "ASSIGN.TO.TOOL" },
+        { 0x0127, "COPY.TOOL" },
+        { 0x0128, "RESET.TOOL" },
+        { 0x0129, "CONSTRAIN.NUMERIC" },
+        { 0x012A, "PASTE.TOOL" },
+        { 0x012E, "WORKBOOK.NEW" },
+
+        // Excel 5.0
+        { 0x0131, "SCENARIO.CELLS" },
+        { 0x0132, "SCENARIO.DELETE" },
+        { 0x0133, "SCENARIO.ADD" },
+        { 0x0134, "SCENARIO.EDIT" },
+        { 0x0135, "SCENARIO.SHOW" },
+        { 0x0136, "SCENARIO.SHOW.NEXT" },
+        { 0x0137, "SCENARIO.SUMMARY" },
+        { 0x0138, "PIVOT.TABLE.WIZARD" },
+        { 0x0139, "PIVOT.FIELD.PROPERTIES" },
+        { 0x013A, "PIVOT.FIELD" },
+        { 0x013B, "PIVOT.ITEM" },
+        { 0x013C, "PIVOT.ADD.FIELDS" },
+        { 0x013E, "OPTIONS.CALCULATION" },
+        { 0x013F, "OPTIONS.EDIT" },
+        { 0x0140, "OPTIONS.VIEW" },
+        { 0x0141, "ADDIN.MANAGER" },
+        { 0x0142, "MENU.EDITOR" },
+        { 0x0143, "ATTACH.TOOLBARS" },
+        { 0x0144, "VBAActivate" },
+        { 0x0145, "OPTIONS.CHART" },
+        { 0x0148, "VBA.INSERT.FILE" },
+        { 0x014A, "VBA.PROCEDURE.DEFINITION" },
+        { 0x0150, "ROUTING.SLIP" },
+        { 0x0152, "ROUTE.DOCUMENT" },
+        { 0x0153, "MAIL.LOGON" },
+        { 0x0156, "INSERT.PICTURE" },
+        { 0x0157, "EDIT.TOOL" },
+        { 0x0158, "GALLERY.DOUGHNUT" },
+        { 0x015E, "CHART.TREND" },
+        { 0x0160, "PIVOT.ITEM.PROPERTIES" },
+        { 0x0162, "WORKBOOK.INSERT" },
+        { 0x0163, "OPTIONS.TRANSITION" },
+        { 0x0164, "OPTIONS.GENERAL" },
+        { 0x0172, "FILTER.ADVANCED" },
+        { 0x0175, "MAIL.ADD.MAILER" },
+        { 0x0176, "MAIL.DELETE.MAILER" },
+        { 0x0177, "MAIL.REPLY" },
+        { 0x0178, "MAIL.REPLY.ALL" },
+        { 0x0179, "MAIL.FORWARD" },
+        { 0x017A, "MAIL.NEXT.LETTER" },
+        { 0x017B, "DATA.LABEL" },
+        { 0x017C, "INSERT.TITLE" },
+        { 0x017D, "FONT.PROPERTIES" },
+        { 0x017E, "MACRO.OPTIONS" },
+        { 0x017F, "WORKBOOK.HIDE" },
+        { 0x0180, "WORKBOOK.UNHIDE" },
+        { 0x0181, "WORKBOOK.DELETE" },
+        { 0x0182, "WORKBOOK.NAME" },
+        { 0x0184, "GALLERY.CUSTOM" },
+        { 0x0186, "ADD.CHART.AUTOFORMAT" },
+        { 0x0187, "DELETE.CHART.AUTOFORMAT" },
+        { 0x0188, "CHART.ADD.DATA" },
+        { 0x0189, "AUTO.OUTLINE" },
+        { 0x018A, "TAB.ORDER" },
+        { 0x018B, "SHOW.DIALOG" },
+        { 0x018C, "SELECT.ALL" },
+        { 0x018D, "UNGROUP.SHEETS" },
+        { 0x018E, "SUBTOTAL.CREATE" },
+        { 0x018F, "SUBTOTAL.REMOVE" },
+        { 0x0190, "RENAME.OBJECT" },
+        { 0x019C, "WORKBOOK.SCROLL" },
+        { 0x019D, "WORKBOOK.NEXT" },
+        { 0x019E, "WORKBOOK.PREV" },
+        { 0x019F, "WORKBOOK.TAB.SPLIT" },
+        { 0x01A0, "FULL.SCREEN" },
+        { 0x01A1, "WORKBOOK.PROTECT" },
+        { 0x01A4, "SCROLLBAR.PROPERTIES" },
+        { 0x01A5, "PIVOT.SHOW.PAGES" },
+        { 0x01A6, "TEXT.TO.COLUMNS" },
+        { 0x01A7, "FORMAT.CHARTTYPE" },
+        { 0x01A8, "LINK.FORMAT" },
+        { 0x01A9, "TRACER.DISPLAY" },
+        { 0x01AE, "TRACER.NAVIGATE" },
+        { 0x01AF, "TRACER.CLEAR" },
+        { 0x01B0, "TRACER.ERROR" },
+        { 0x01B1, "PIVOT.FIELD.GROUP" },
+        { 0x01B2, "PIVOT.FIELD.UNGROUP" },
+        { 0x01B3, "CHECKBOX.PROPERTIES" },
+        { 0x01B4, "LABEL.PROPERTIES" },
+        { 0x01B5, "LISTBOX.PROPERTIES" },
+        { 0x01B6, "EDITBOX.PROPERTIES" },
+        { 0x01B7, "PIVOT.REFRESH" },
+        { 0x01B8, "LINK.COMBO" },
+        { 0x01B9, "OPEN.TEXT" },
+        { 0x01BA, "HIDE.DIALOG" },
+        { 0x01BB, "SET.DIALOG.FOCUS" },
+        { 0x01BC, "ENABLE.OBJECT" },
+        { 0x01BD, "PUSHBUTTON.PROPERTIES" },
+        { 0x01BE, "SET.DIALOG.DEFAULT" },
+        { 0x01BF, "FILTER" },
+        { 0x01C0, "FILTER.SHOW.ALL" },
+        { 0x01C1, "CLEAR.OUTLINE" },
+        { 0x01C2, "FUNCTION.WIZARD" },
+        { 0x01C3, "ADD.LIST.ITEM" },
+        { 0x01C4, "SET.LIST.ITEM" },
+        { 0x01C5, "REMOVE.LIST.ITEM" },
+        { 0x01C6, "SELECT.LIST.ITEM" },
+        { 0x01C7, "SET.CONTROL.VALUE" },
+        { 0x01C8, "SAVE.COPY.AS" },
+        { 0x01CA, "OPTIONS.LISTS.ADD" },
+        { 0x01CB, "OPTIONS.LISTS.DELETE" },
+        { 0x01CC, "SERIES.AXES" },
+        { 0x01CD, "SERIES.X" },
+        { 0x01CE, "SERIES.Y" },
+        { 0x01CF, "ERRORBAR.X" },
+        { 0x01D0, "ERRORBAR.Y" },
+        { 0x01D1, "FORMAT.CHART" },
+        { 0x01D2, "SERIES.ORDER" },
+        { 0x01D3, "MAIL.LOGOFF" },
+        { 0x01D4, "CLEAR.ROUTING.SLIP" },
+        { 0x01D5, "APP.ACTIVATE.MICROSOFT" },
+        { 0x01D6, "MAIL.EDIT.MAILER" },
+        { 0x01D7, "ON.SHEET" },
+        { 0x01D8, "STANDARD.WIDTH" },
+        { 0x01D9, "SCENARIO.MERGE" },
+        { 0x01DA, "SUMMARY.INFO" },
+        { 0x01DB, "FIND.FILE" },
+        { 0x01DC, "ACTIVE.CELL.FONT" },
+        { 0x01DD, "ENABLE.TIPWIZARD" },
+        { 0x01DE, "VBA.MAKE.ADDIN" },
+        { 0x01E0, "INSERTDATATABLE" }, // Unknown.
+        { 0x01E1, "WORKGROUP.OPTIONS" }, // Unknown.
+        { 0x01E2, "MAIL.SEND.MAILER" }, // Excel 4.0.
     };
 
     public static string ReadFormulaString(XlsBiffRecord record, int biffVersion, int offset, int cce, int rgbExtraOffset, XlsFormulaReaderContext context)
@@ -779,7 +1066,7 @@ internal static class XlsFormulaReader
                 case Ptg.PtgFuncCER:
                 case Ptg.PtgFuncCEV:
                 case Ptg.PtgFuncCEA:
-                    read = ParsePtgFuncCE(record, offset, read, operands);
+                    read = ParsePtgFuncCE(record, biffVersion, offset, read, operands);
                     break;
 
                 case Ptg.PtgNameXR:
@@ -793,7 +1080,7 @@ internal static class XlsFormulaReader
                 case Ptg.PtgRef3dA:
                     if (biffVersion <= 5)
                     {
-                        read = ParsePtgRef3d5(record, biffVersion, offset, read, operands, context);
+                        read = ParsePtgRef3d5(record, biffVersion, offset, read, operands, context, isError: false);
                     }
                     else
                     {
@@ -807,7 +1094,7 @@ internal static class XlsFormulaReader
                 case Ptg.PtgArea3dA:
                     if (biffVersion <= 5)
                     {
-                        read = ParsePtgArea3d5(record, biffVersion, offset, read, operands, context);
+                        read = ParsePtgArea3d5(record, biffVersion, offset, read, operands, context, isError: false);
                     }
                     else
                     {
@@ -819,13 +1106,29 @@ internal static class XlsFormulaReader
                 case Ptg.PtgAreaErr3dR:
                 case Ptg.PtgAreaErr3dV:
                 case Ptg.PtgAreaErr3dA:
-                    read = ParsePtgAreaErr3d(record, biffVersion, offset, read, operands);
+                    if (biffVersion <= 5)
+                    {
+                        read = ParsePtgArea3d5(record, biffVersion, offset, read, operands, context, isError: true);
+                    }
+                    else
+                    {
+                        read = ParsePtgArea3d8(record, biffVersion, offset, read, operands, context);
+                    }
+
                     break;
 
                 case Ptg.PtgRefErr3dR:
                 case Ptg.PtgRefErr3dV:
                 case Ptg.PtgRefErr3dA:
-                    read = ParsePtgRefErr3d(record, biffVersion, offset, read, operands);
+                    if (biffVersion <= 5)
+                    {
+                        read = ParsePtgRef3d5(record, biffVersion, offset, read, operands, context, isError: true);
+                    }
+                    else
+                    {
+                        read = ParsePtgRef3d8(record, biffVersion, offset, read, operands, context);
+                    }
+
                     break;
 
                 case (Ptg)0x19:
@@ -839,7 +1142,7 @@ internal static class XlsFormulaReader
 
         if (operands.Count != 1)
         {
-            throw new InvalidOperationException("Invalid formula parsing state - final operand count is not 1.");
+            throw new InvalidOperationException($"Invalid formula parsing state - final operand count is not 1. Operands: {string.Join(", ", operands)}");
         }
 
         // Build the final formula string.
@@ -920,7 +1223,7 @@ internal static class XlsFormulaReader
         return (colIndex, colRelative, rowRelative);
     }
 
-    private static void PushMacroCommandCall(ushort ctab, Stack<string> operands, byte cparams)
+    private static void PushMacroCommandCall(int biffVersion, ushort ctab, Stack<string> operands, byte cparams)
     {
         // [MS-XLS] 2.5.198.4 Cetab
         // The Cetab structure specifies a function that can be called from a formula
@@ -929,6 +1232,25 @@ internal static class XlsFormulaReader
         if (!MacroCommandNames.TryGetValue(ctab, out var macroName))
         {
             throw new NotSupportedException($"Macro command 0x{ctab:X2} not supported in formula string parsing.");
+        }
+
+        if (biffVersion >= 4)
+        {
+            switch (macroName)
+            {
+                case "FILL.WORKGROUP":
+                    // FILL.WORKGROUP was renamed to FILL.GROUP in BIFF4.
+                    macroName = "FILL.GROUP";
+                    break;
+                case "MOVE":
+                    // MOVE was renamed to WINDOW.MOVE in BIFF4.
+                    macroName = "WINDOW.MOVE";
+                    break;
+                case "PLACEMENT":
+                    // PLACEMENT was renamed to OBJECT.PROPERTIES in BIFF4.
+                    macroName = "OBJECT.PROPERTIES";
+                    break;
+            }
         }
 
         // This is not documented, but cparams uses the high bit to indicate
@@ -983,7 +1305,12 @@ internal static class XlsFormulaReader
             return;
         }
 
-        List<string> args = new List<string>();
+        if (actualParams > operands.Count)
+        {
+            throw new InvalidOperationException($"Can't read function \"{function.Item1}\" 0x{iftab:X2}. Expected {actualParams}, but got {operands.Count}.");
+        }
+
+        List<string> args = [];
         for (int i = 0; i < actualParams; i++)
         {
             args.Add(operands.Pop());
@@ -1005,7 +1332,7 @@ internal static class XlsFormulaReader
         return $"{columnPart}{rowPart}";
     }
 
-    private static string GetRangeString(int firstColumnIndex, bool firstColumnRelative, int firstRowIndex, bool firstRowRelative, int lastColumnIndex, bool lastColumnRelative, int lastRowIndex, bool lastRowRelative)
+    private static string GetRangeString(int biffVersion, int firstColumnIndex, bool firstColumnRelative, int firstRowIndex, bool firstRowRelative, int lastColumnIndex, bool lastColumnRelative, int lastRowIndex, bool lastRowRelative)
     {
         if (!firstRowRelative && !lastRowRelative)
         {
@@ -1015,6 +1342,17 @@ internal static class XlsFormulaReader
                 var firstColumnString = GetColumnString(firstColumnIndex, firstColumnRelative);
                 var lastColumnString = GetColumnString(lastColumnIndex, lastColumnRelative);
                 return $"{firstColumnString}:{lastColumnString}";
+            }
+        }
+
+        if (!firstColumnRelative && !lastColumnRelative)
+        {
+            if (biffVersion <= 5 && firstColumnIndex == 0 && lastColumnIndex == 255)
+            {
+                // This is a row range, e.g., 1:16384
+                var firstRowString = GetRowString(firstRowIndex, firstRowRelative);
+                var lastRowString = GetRowString(lastRowIndex, lastRowRelative);
+                return $"{firstRowString}:{lastRowString}";
             }
         }
 
@@ -1655,7 +1993,7 @@ internal static class XlsFormulaReader
 
             if (fCeFunc)
             {
-                PushMacroCommandCall(tab, operands, cparams);
+                PushMacroCommandCall(biffVersion, tab, operands, cparams);
             }
             else
             {
@@ -2029,7 +2367,7 @@ internal static class XlsFormulaReader
         return read;
     }
 
-    private static int ParsePtgFuncCE(XlsBiffRecord record, int offset, int read, Stack<string> operands)
+    private static int ParsePtgFuncCE(XlsBiffRecord record, int biffVersion, int offset, int read, Stack<string> operands)
     {
         // Not documented in [MS-XLS].
         // But included in 1988 Microsoft Excel documentation
@@ -2040,7 +2378,7 @@ internal static class XlsFormulaReader
         byte index = record.ReadByte(offset + read);
         read++;
 
-        PushMacroCommandCall(index, operands, cparams);
+        PushMacroCommandCall(biffVersion, index, operands, cparams);
         return read;
     }
 
@@ -2129,7 +2467,7 @@ internal static class XlsFormulaReader
         return read;
     }
 
-    private static int ParsePtgRef3d5(XlsBiffRecord record, int biffVersion, int offset, int read, Stack<string> operands, XlsFormulaReaderContext context)
+    private static int ParsePtgRef3d5(XlsBiffRecord record, int biffVersion, int offset, int read, Stack<string> operands, XlsFormulaReaderContext context, bool isError)
     {
         // Token tRef3d for 3D references, BIFF5:
         // This is always a negative value to indicate a 3D reference. The absolute
@@ -2169,7 +2507,8 @@ internal static class XlsFormulaReader
         string address = ParseCellAddress(record, biffVersion, offset + read, out var bytesRead);
         read += bytesRead;
 
-        operands.Push($"{Get3dString5(sheetIndex, firstReferencedSheetIndex, lastReferencedSheetIndex, context)}!{address}");
+        string addressString = !isError ? address : "#REF!";
+        operands.Push($"{Get3dString5(sheetIndex, firstReferencedSheetIndex, lastReferencedSheetIndex, context)}!{addressString}");
         return read;
     }
 
@@ -2194,7 +2533,7 @@ internal static class XlsFormulaReader
         return read;
     }
 
-    private static int ParsePtgArea3d5(XlsBiffRecord record, int biffVersion, int offset, int read, Stack<string> operands, XlsFormulaReaderContext context)
+    private static int ParsePtgArea3d5(XlsBiffRecord record, int biffVersion, int offset, int read, Stack<string> operands, XlsFormulaReaderContext context, bool isError)
     {
         // BIFF5 stores PtgArea3d differently.
         // Not documented in MS-XLS.
@@ -2238,7 +2577,8 @@ internal static class XlsFormulaReader
         string address = ParseCellAddressRange(record, biffVersion, offset + read, out var bytesRead);
         read += bytesRead;
 
-        operands.Push($"{Get3dString5(sheetIndex, firstReferencedSheetIndex, lastReferencedSheetIndex, context)}!{address}");
+        string addressString = !isError ? address : "#REF!";
+        operands.Push($"{Get3dString5(sheetIndex, firstReferencedSheetIndex, lastReferencedSheetIndex, context)}!{addressString}");
         return read;
     }
 
@@ -2261,156 +2601,6 @@ internal static class XlsFormulaReader
         read += bytesRead;
 
         operands.Push($"{Get3dString8(ixti, context)}!{address}");
-        return read;
-    }
-
-    private static int ParsePtgAreaErr3d(XlsBiffRecord record, int biffVersion, int offset, int read, Stack<string> operands)
-    {
-        // [MS-XLS] 2.5.198.30 PtgAreaErr3d
-        // The PtgAreaErr3d operand specifies an erroneous reference to a
-        // rectangular range of cells in an external workbook.
-        if (biffVersion <= 5)
-        {
-            // BIFF5 stores PtgAreaErr3d differently.
-            // This is always a negative value to indicate a 3D reference.
-            // The absolute value is the onebased index to EXTERNSHEET record (➜5.41)
-            // in the Local Link Table (➜4.10.2).
-            // This is always a positive value to indicate an external reference. One-based
-            // index to EXTERNSHEET record (➜5.41) in the Local Link Table (➜4.10.2).
-            int sheetIndex = record.ReadInt16(offset + read);
-            read += 2;
-
-            // Not used.
-            _ = record.ReadUInt32(offset + read);
-            read += 4;
-
-            _ = record.ReadUInt32(offset + read);
-            read += 4;
-
-            if (sheetIndex < 0)
-            {
-                // Zero-based index to first referenced sheet (FFFFH = deleted sheet)
-                _ = record.ReadUInt16(offset + read);
-                read += 2;
-
-                // Zero-based index to last referenced sheet (FFFFH = deleted sheet)
-                _ = record.ReadUInt16(offset + read);
-                read += 2;
-            }
-            else
-            {
-                // Not used.
-                _ = record.ReadUInt32(offset + read);
-                read += 4;
-            }
-
-            // Not used.
-            _ = record.ReadUInt16(offset + read);
-            read += 2;
-
-            _ = record.ReadUInt16(offset + read);
-            read += 2;
-
-            _ = record.ReadUInt16(offset + read);
-            read += 2;
-        }
-        else
-        {
-            // ixti (2 bytes): If the formula containing this structure is not part of a
-            // revision as specified in the Formulas overview, then this value is an XtiIndex
-            // that specifies the XTI which specifies those sheets. Otherwise it is undefined
-            // and MUST be ignored.
-            _ = record.ReadUInt16(offset + read);
-            read += 2;
-
-            // unused1 (2 bytes): Undefined and MUST be ignored.
-            _ = record.ReadUInt16(offset + read);
-            read += 2;
-
-            // unused2 (2 bytes): Undefined and MUST be ignored.
-            _ = record.ReadUInt16(offset + read);
-            read += 2;
-
-            // unused4 (2 bytes): Undefined and MUST be ignored.
-            _ = record.ReadUInt16(offset + read);
-            read += 2;
-
-            // unused4 (2 bytes): Undefined and MUST be ignored.
-            _ = record.ReadUInt16(offset + read);
-            read += 2;
-        }
-
-        operands.Push("#REF!");
-        return read;
-    }
-
-    private static int ParsePtgRefErr3d(XlsBiffRecord record, int biffVersion, int offset, int read, Stack<string> operands)
-    {
-        // [MS-XLS] 2.5.198.87 PtgRefErr3d
-        // The PtgRefErr3d operand specifies an erroneous reference to a single
-        // cell in an external workbook.
-        if (biffVersion == 5)
-        {
-            // Token tRefErr3d for 3D references, BIFF5:
-            // This is always a negative value to indicate a 3D reference. The absolute
-            // value is the onebased index to EXTERNSHEET record (➜5.41) in the Local
-            // Link Table (➜4.10.2).
-            // This is always a positive value to indicate an external reference.
-            // One-based index to EXTERNSHEET record (➜5.41) in the Local Link Table
-            // (➜4.10.2).
-            int sheetIndex = record.ReadInt16(offset + read);
-            read += 2;
-
-            // Not used.
-            _ = record.ReadUInt32(offset + read);
-            read += 4;
-
-            _ = record.ReadUInt32(offset + read);
-            read += 4;
-
-            if (sheetIndex < 0)
-            {
-                // Zero-based index to first referenced sheet (FFFFH = deleted sheet)
-                _ = record.ReadUInt16(offset + read);
-                read += 2;
-
-                // Zero-based index to last referenced sheet (FFFFH = deleted sheet)
-                _ = record.ReadUInt16(offset + read);
-                read += 2;
-            }
-            else
-            {
-                // Not used.
-                _ = record.ReadUInt32(offset + read);
-                read += 4;
-            }
-
-            // Not used.
-            _ = record.ReadUInt16(offset + read);
-            read += 2;
-
-            _ = record.ReadByte(offset + read);
-            read += 1;
-        }
-        else
-        {
-            // ixti (2 bytes): If the formula containing this structure is not part of a
-            // revision as specified in the Formulas overview (section 2.2.2), then this
-            // value is an XtiIndex that specifies the XTI which specifies those sheets.
-            // Otherwise it is undefined and MUST be ignored.
-            _ = record.ReadUInt16(offset + read);
-            read += 2;
-
-            // unused1 (2 bytes): Undefined and MUST be ignored.
-            _ = record.ReadUInt16(offset + read);
-            read += 2;
-
-            // unused2 (2 bytes): Undefined and MUST be ignored.
-            _ = record.ReadUInt16(offset + read);
-            read += 2;
-        }
-
-        operands.Push("#REF!");
         return read;
     }
 
@@ -2751,7 +2941,7 @@ internal static class XlsFormulaReader
         }
 
         bytesRead = read;
-        return GetRangeString(colFirst, colFirstRelative, rowFirst, rowFirstRelative, colLast, colLastRelative, rowLast, rowLastRelative);
+        return GetRangeString(biffVersion, colFirst, colFirstRelative, rowFirst, rowFirstRelative, colLast, colLastRelative, rowLast, rowLastRelative);
     }
 
     private static string Get3dString5(int sheetIndex, int? firstReferencedSheetIndex, int? lastReferencedSheetIndex, XlsFormulaReaderContext context)
@@ -2760,8 +2950,26 @@ internal static class XlsFormulaReader
         if (sheet.IsSelf && firstReferencedSheetIndex.HasValue && lastReferencedSheetIndex.HasValue)
         {
             // Internal sheet reference.
-            string firstSheetName = context.Sheets[firstReferencedSheetIndex.Value].GetSheetName(context.Encoding);
-            string lastSheetName = context.Sheets[lastReferencedSheetIndex.Value].GetSheetName(context.Encoding);
+            string firstSheetName;
+            if (firstReferencedSheetIndex.Value == 0xFFFF)
+            {
+                firstSheetName = "#REF";
+            }
+            else
+            {
+                firstSheetName = context.Sheets[firstReferencedSheetIndex.Value].GetSheetName(context.Encoding);
+            }
+
+            string lastSheetName;
+            if (lastReferencedSheetIndex.Value == 0xFFFF)
+            {
+                lastSheetName = "#REF";
+            }
+            else
+            {
+                lastSheetName = context.Sheets[lastReferencedSheetIndex.Value].GetSheetName(context.Encoding);
+            }
+
             return firstSheetName == lastSheetName
                 ? firstSheetName
                 : $"{firstSheetName}:{lastSheetName}";
@@ -2769,6 +2977,20 @@ internal static class XlsFormulaReader
         else
         {
             // External sheet reference.
+            // If the sheet's name is in the format [Workbook]Sheet
+            // and Workbook and Sheet are the same, just display
+            // Sheet.
+            var index = sheet.Name.IndexOf(']');
+            if (sheet.Name.Length > 0 && sheet.Name[0] == '[' && index > 0)
+            {
+                var workbookName = sheet.Name[1..index];
+                var sheetName = sheet.Name[(index + 1)..];
+                if (workbookName == sheetName)
+                {
+                    return sheetName;
+                }
+            }
+            
             return sheet.Name;
         }
     }

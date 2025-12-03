@@ -1232,6 +1232,41 @@ public class ExcelBinaryReaderTest : ExcelTestBase
     }
 
     [Test]
+    public void GetCellFormula_BIFF3_MacrosExcel3()
+    {
+        // New formulae in Excel 3 for Mac.
+        VerifyFormulas(Path.Combine("xls", "BIFF3", "Excel 3.0 Macros.xlm"), Path.Combine("xls", "BIFF3", "Excel 3.0 Macros.txt"));
+    }
+
+    [Test]
+    public void GetCellFormula_BIFF4_MacrosExcel4()
+    {
+        // New formulae in Excel 4 for Mac.
+        VerifyFormulas(Path.Combine("xls", "BIFF4", "Excel 4.0 Macros.xlm"), Path.Combine("xls", "BIFF4", "Excel 4.0 Macros.txt"));
+    }
+
+    [Test]
+    public void GetCellFormula_BIFF5_Constants()
+    {
+        // Constants in Excel 5.
+        VerifyFormulas(Path.Combine("xls", "BIFF5", "CONSTS.xls"), Path.Combine("xls", "BIFF5", "CONSTS.txt"));
+    }
+
+    [Test]
+    public void GetCellFormula_BIFF5_References()
+    {
+        // References (single cell, area, sheets) in Excel 5.
+        VerifyFormulas(Path.Combine("xls", "BIFF5", "REFS.xls"), Path.Combine("xls", "BIFF5", "REFS.txt"));
+    }
+
+    [Test]
+    public void GetCellFormula_BIFF5_MacrosExcel5()
+    {
+        // New formulae in Excel 5 for Mac.
+        VerifyFormulas(Path.Combine("xls", "BIFF5", "Excel 5.0 Macros.xlm"), Path.Combine("xls", "BIFF5", "Excel 5.0 Macros.txt"));
+    }
+
+    [Test]
     public void GetCellNote_BIFF2()
     {
         using var stream = Configuration.GetTestWorkbook(Path.Combine("xls", "BIFF2", "NOTES.XLS"));

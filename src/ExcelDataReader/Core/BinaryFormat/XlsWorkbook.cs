@@ -179,7 +179,7 @@ internal sealed class XlsWorkbook : CommonWorkbook, IWorkbook<XlsWorksheet>
                     InterfaceHdr = hdr;
                     break;
                 case XlsBiffBoundSheet sheet:
-                    if (sheet.Type != XlsBiffBoundSheet.SheetType.Worksheet)
+                    if (sheet.Type != XlsBiffBoundSheet.SheetType.Worksheet && sheet.Type != XlsBiffBoundSheet.SheetType.MacroSheet)
                         break;
                     Sheets.Add(sheet);
                     break;
