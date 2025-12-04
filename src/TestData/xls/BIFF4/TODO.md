@@ -1,0 +1,13 @@
+TODO
+
+Excel 4.0 Reference
+- CREATE.DIRECTORY
+- SOLVER.OPTIONS
+- SOLVER.SAVE
+- VIEW.SHOW
+- REPORT.GET
+- SCENARIO.GET
+- SLIDE.GET
+- REPORT.DEIFNE
+- ENABLE.TOOL only allows 3 params
+- PRESS.TOOL only allows 3 params

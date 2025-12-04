@@ -1,6 +1,4 @@
-using System.Data;
 using System.Globalization;
-using System.Runtime.InteropServices;
 using System.Text;
 
 namespace ExcelDataReader.Core.BinaryFormat;
@@ -1131,7 +1129,7 @@ internal static class XlsFormulaReader
 
                     break;
 
-                case (Ptg)0x19:
+                case Ptg.PtgAttr:
                     read = ParsePtgAttr(record, biffVersion, offset, read, operands, formulaString, ref isBasicAssignment);
                     break;
 
@@ -1153,7 +1151,7 @@ internal static class XlsFormulaReader
         else if (!isBasicAssignment)
         {
             // Prepend the '=' sign for normal formulas.
-            formulaString.Append('=');
+            formulaString.Insert(0, '=');
         }
 
         formulaString.Append(operands.Pop());
@@ -2648,6 +2646,10 @@ internal static class XlsFormulaReader
                 read = ParsePtgAttrSpace(record, offset, read, formulaString);
                 break;
 
+            case 0x41:
+                read = ParsePtgAttrSpaceSemi(record, offset, read, formulaString);
+                break;
+
             default:
                 throw new NotSupportedException($"PTG 0x19 subtype 0x{ptgSubType:X2} not supported in formula string parsing.");
         }
@@ -2818,13 +2820,27 @@ internal static class XlsFormulaReader
         // The PtgAttrSpace display token specifies a number of space or carriage
         // return characters that are displayed around the expression in a
         // display-precedence-expression.
-        // reserved2 (6 bits):  MUST be zero, and MUST be ignored.
-        // B - bitSpace (1 bit): Reserved. MUST be 1.
-        // C - reserved3 (1 bit):  MUST be zero, and MUST be ignored.
-        _ = record.ReadByte(offset + read);
 
         // type (2 bytes): A PtgAttrSpaceType that specifies a number of space
         // or carriage return characters and the position of those characters
+        return ParsePtgAttrSpaceType(record, offset, read, formulaString);
+    }
+
+    private static int ParsePtgAttrSpaceSemi(XlsBiffRecord record, int offset, int read, StringBuilder formulaString)
+    {
+        // [MS-XLS] 2.5.198.39 PtgAttrSpaceSemi
+        // The PtgAttrSpaceSemi structure specifies a number of space
+        // or carriage return characters that are displayed around
+        // the expression in a display-precedence-specifier and that
+        // the Rgce is volatile.
+
+        // type (2 bytes): A PtgAttrSpaceType that specifies a number
+        // of space or carriage return characters and position of those characters
+        return ParsePtgAttrSpaceType(record, offset, read, formulaString);
+    }
+
+    private static int ParsePtgAttrSpaceType(XlsBiffRecord record, int offset, int read, StringBuilder formulaString)
+    {
         // [MS-XLS] 2.5.198.40 PtgAttrSpaceType
         // The PtgAttrSpaceType structure specifies the number of space or
         // carriage return characters and position of those characters.

@@ -363,6 +363,7 @@ internal enum Ptg : byte
     PtgParen = 0x15,
     PtgMissArg = 0x16,
     PtgStr = 0x17,
+    PtgAttr = 0x19,
     PtgSheet = 0x1A, // Not documented by MS-XLS. BIFF2-BIFF5 only.
     PtgEndSheet = 0x1B, // Not documented by MS-XLS. BIFF2-BIFF5 only.
     PtgErr = 0x1C,
