@@ -771,7 +771,7 @@ internal static class XlsFormulaReader
         // external names and not the defined names.
         bool isInExternalSheet = false;
 
-        var operands = new Stack<string>();
+        var operands = new XlsFormulaStack();
         while (read < cce)
         {
             var ptg = (Ptg)record.ReadByte(offset + read);
@@ -1130,7 +1130,7 @@ internal static class XlsFormulaReader
                     break;
 
                 case Ptg.PtgAttr:
-                    read = ParsePtgAttr(record, biffVersion, offset, read, operands, formulaString, ref isBasicAssignment);
+                    read = ParsePtgAttr(record, biffVersion, offset, read, operands, ref isBasicAssignment);
                     break;
 
                 default:
@@ -1221,7 +1221,7 @@ internal static class XlsFormulaReader
         return (colIndex, colRelative, rowRelative);
     }
 
-    private static void PushMacroCommandCall(int biffVersion, ushort ctab, Stack<string> operands, byte cparams)
+    private static void PushMacroCommandCall(int biffVersion, ushort ctab, XlsFormulaStack operands, byte cparams)
     {
         // [MS-XLS] 2.5.198.4 Cetab
         // The Cetab structure specifies a function that can be called from a formula
@@ -1272,7 +1272,7 @@ internal static class XlsFormulaReader
         operands.Push($"{actualMacroName}({string.Join(",", paramArgs)})");
     }
 
-    private static void PushFunctionCall(ushort iftab, Stack<string> operands, byte? cparams, bool isBasicAssignment)
+    private static void PushFunctionCall(ushort iftab, XlsFormulaStack operands, byte? cparams, bool isBasicAssignment)
     {
         // [MS-XLS] 2.5.198.17 Ftab
         // The Ftab structure specifies a function which can be called from a formula (section 2.2.2).
@@ -1408,20 +1408,20 @@ internal static class XlsFormulaReader
     }
 
     // Helper methods for parsing each Ptg type
-    private static void ParseBinaryOperator(Stack<string> operands, string operatorSymbol)
+    private static void ParseBinaryOperator(XlsFormulaStack operands, string operatorSymbol)
     {
         var right = operands.Pop();
         var left = operands.Pop();
         operands.Push($"{left}{operatorSymbol}{right}");
     }
 
-    private static void ParseUnaryOperator(Stack<string> operands, string operatorSymbol, bool prefix)
+    private static void ParseUnaryOperator(XlsFormulaStack operands, string operatorSymbol, bool prefix)
     {
         var expr = operands.Pop();
         operands.Push(prefix ? $"{operatorSymbol}{expr}" : $"{expr}{operatorSymbol}");
     }
 
-    private static void ParsePtgParen(Stack<string> operands)
+    private static void ParsePtgParen(XlsFormulaStack operands)
     {
         // [MS-XLS] 2.5.198.80 PtgParen
         // The PtgParen display token specifies that parentheses are displayed
@@ -1430,14 +1430,14 @@ internal static class XlsFormulaReader
         operands.Push($"({expr})");
     }
 
-    private static void ParsePtgMissArg(Stack<string> operands)
+    private static void ParsePtgMissArg(XlsFormulaStack operands)
     {
         // [MS-XLS] 2.5.198.74 PtgMissArg
         // The PtgMissArg operand specifies a missing value.
         operands.Push(string.Empty);
     }
 
-    private static int ParsePtgExp(XlsBiffRecord record, int biffVersion, int offset, int read, Stack<string> operands, XlsFormulaReaderContext context, out bool isArrayFormula)
+    private static int ParsePtgExp(XlsBiffRecord record, int biffVersion, int offset, int read, XlsFormulaStack operands, XlsFormulaReaderContext context, out bool isArrayFormula)
     {
         // [MS-XLS] 2.5.198.58 PtgExp
         // The PtgExp structure specifies that the containing Rgce is part
@@ -1522,7 +1522,7 @@ internal static class XlsFormulaReader
         throw new NotSupportedException($"PTG EXP could not find matching array or shared formula at row {row}, col {col}.");
     }
 
-    private static int ParsePtgTbl(XlsBiffRecord record, int biffVersion, int offset, int read, Stack<string> operands, XlsFormulaReaderContext context)
+    private static int ParsePtgTbl(XlsBiffRecord record, int biffVersion, int offset, int read, XlsFormulaStack operands, XlsFormulaReaderContext context)
     {
         // [MS-XLS] 2.5.198.92 PtgTbl
         // The PtgTbl structure specifies that the Rgce that contains this PtgTbl is part of
@@ -1575,7 +1575,7 @@ internal static class XlsFormulaReader
         return read;
     }
 
-    private static int ParsePtgStr(XlsBiffRecord record, int biffVersion, int offset, int read, Stack<string> operands)
+    private static int ParsePtgStr(XlsBiffRecord record, int biffVersion, int offset, int read, XlsFormulaStack operands)
     {
         // [MS-XLS] 2.5.198.89 PtgStr
         // The PtgStr operand specifies a Unicode string value.
@@ -1600,7 +1600,7 @@ internal static class XlsFormulaReader
         return read;
     }
 
-    private static int ParsePtgErr(XlsBiffRecord record, int offset, int read, Stack<string> operands)
+    private static int ParsePtgErr(XlsBiffRecord record, int offset, int read, XlsFormulaStack operands)
     {
         // [MS-XLS] 2.5.198.57 PtgErr
         // The PtgErr operand specifies an error code.
@@ -1611,7 +1611,7 @@ internal static class XlsFormulaReader
         return read;
     }
 
-    private static int ParsePtgBool(XlsBiffRecord record, int offset, int read, Stack<string> operands)
+    private static int ParsePtgBool(XlsBiffRecord record, int offset, int read, XlsFormulaStack operands)
     {
         // [MS-XLS] 2.5.198.42 PtgBool
         // The PtgBool operand specifies a Boolean value.
@@ -1622,7 +1622,7 @@ internal static class XlsFormulaReader
         return read;
     }
 
-    private static int ParsePtgInt(XlsBiffRecord record, int offset, int read, Stack<string> operands)
+    private static int ParsePtgInt(XlsBiffRecord record, int offset, int read, XlsFormulaStack operands)
     {
         // [MS-XLS] 2.5.198.66 PtgInt
         // The PtgInt operand specifies an unsigned integer value.
@@ -1633,7 +1633,7 @@ internal static class XlsFormulaReader
         return read;
     }
 
-    private static int ParsePtgNum(XlsBiffRecord record, int offset, int read, Stack<string> operands)
+    private static int ParsePtgNum(XlsBiffRecord record, int offset, int read, XlsFormulaStack operands)
     {
         // [MS-XLS] 2.5.198.79 PtgNum
         // The PtgNum operand specifies a IEEE 754 floating-point number.
@@ -1644,7 +1644,7 @@ internal static class XlsFormulaReader
         return read;
     }
 
-    private static int ParsePtgRef(XlsBiffRecord record, int biffVersion, int offset, int read, Stack<string> operands)
+    private static int ParsePtgRef(XlsBiffRecord record, int biffVersion, int offset, int read, XlsFormulaStack operands)
     {
         // [MS-XLS] 2.5.198.84 PtgRef
         // The PtgRef operand specifies a reference to a single
@@ -1654,7 +1654,7 @@ internal static class XlsFormulaReader
         return read;
     }
 
-    private static int ParsePtgArea(XlsBiffRecord record, int biffVersion, int offset, int read, Stack<string> operands)
+    private static int ParsePtgArea(XlsBiffRecord record, int biffVersion, int offset, int read, XlsFormulaStack operands)
     {
         // [MS-XLS] 2.5.198.27 PtgArea
         // The PtgArea operand specifies a reference to a rectangular range of cells.
@@ -1663,7 +1663,7 @@ internal static class XlsFormulaReader
         return read;
     }
 
-    private static int ParsePtgRefN(XlsBiffRecord record, int biffVersion, int offset, int read, Stack<string> operands)
+    private static int ParsePtgRefN(XlsBiffRecord record, int biffVersion, int offset, int read, XlsFormulaStack operands)
     {
         // [MS-XLS] 2.5.198.88 PtgRefN
         // The PtgRefN operand specifies a reference to a single cell as an RgceLocRel.
@@ -1672,7 +1672,7 @@ internal static class XlsFormulaReader
         return read;
     }
 
-    private static int ParsePtgAreaN(XlsBiffRecord record, int biffVersion, int offset, int read, Stack<string> operands)
+    private static int ParsePtgAreaN(XlsBiffRecord record, int biffVersion, int offset, int read, XlsFormulaStack operands)
     {
         // [MS-XLS] 2.5.198.31 PtgAreaN
         // The PtgAreaN operand specifies a reference to a rectangular range of cells 
@@ -1682,7 +1682,7 @@ internal static class XlsFormulaReader
         return read;
     }
 
-    private static int ParsePtgMemAreaN(XlsBiffRecord record, int biffVersion, int offset, int read, Stack<string> operands)
+    private static int ParsePtgMemAreaN(XlsBiffRecord record, int biffVersion, int offset, int read, XlsFormulaStack operands)
     {
         // Not documented in MS-XLS.
         // But documented in https://github.com/xieguigang/sciBASIC/blob/master/mime/application%25vnd.openxmlformats-officedocument.spreadsheetml.sheet/Excel/XLS/BIFF/excel.txt#L633
@@ -1702,7 +1702,7 @@ internal static class XlsFormulaReader
         return read;
     }
 
-    private static int ParsePtgMemNoMemN(XlsBiffRecord record, int biffVersion, int offset, int read, Stack<string> operands)
+    private static int ParsePtgMemNoMemN(XlsBiffRecord record, int biffVersion, int offset, int read, XlsFormulaStack operands)
     {
         // Not documented in MS-XLS.
         // But documented in https://github.com/xieguigang/sciBASIC/blob/master/mime/application%25vnd.openxmlformats-officedocument.spreadsheetml.sheet/Excel/XLS/BIFF/excel.txt#L633
@@ -1722,7 +1722,7 @@ internal static class XlsFormulaReader
         return read;
     }
 
-    private static int ParsePtgArray(XlsBiffRecord record, int biffVersion, int offset, int read, ref int rgbExtraOffset, Stack<string> operands)
+    private static int ParsePtgArray(XlsBiffRecord record, int biffVersion, int offset, int read, ref int rgbExtraOffset, XlsFormulaStack operands)
     {
         // [MS-XLS] 2.5.198.27 PtgArray
         // The PtgArray operand specifies an array of values. There MUST be a PtgExtraArray
@@ -1923,7 +1923,7 @@ internal static class XlsFormulaReader
         return stringBuilder.ToString();
     }
 
-    private static int ParsePtgFunc(XlsBiffRecord record, int biffVersion, int offset, int read, Stack<string> operands, bool isBasicAssignment)
+    private static int ParsePtgFunc(XlsBiffRecord record, int biffVersion, int offset, int read, XlsFormulaStack operands, bool isBasicAssignment)
     {
         // [MS-XLS] 2.5.198.62 PtgFunc
         // The PtgFunc structure specifies a call to a function with a
@@ -1948,7 +1948,7 @@ internal static class XlsFormulaReader
         return read;
     }
 
-    private static int ParsePtgFuncVar(XlsBiffRecord record, int biffVersion, int offset, int read, Stack<string> operands, bool isBasicAssignment)
+    private static int ParsePtgFuncVar(XlsBiffRecord record, int biffVersion, int offset, int read, XlsFormulaStack operands, bool isBasicAssignment)
     {
         // [MS-XLS] 2.5.198.63 PtgFuncVar
         // The PtgFuncVar structure specifies a call to a function with a
@@ -2002,7 +2002,7 @@ internal static class XlsFormulaReader
         return read;
     }
 
-    private static int ParsePtgName(XlsBiffRecord record, int biffVersion, int offset, int read, Stack<string> operands, XlsFormulaReaderContext context, bool isInExternalSheet)
+    private static int ParsePtgName(XlsBiffRecord record, int biffVersion, int offset, int read, XlsFormulaStack operands, XlsFormulaReaderContext context, bool isInExternalSheet)
     {
         // [MS-XLS] 2.5.198.76 PtgName
         // The PtgName operand specifies a reference to a defined name in the same workbook
@@ -2064,7 +2064,7 @@ internal static class XlsFormulaReader
         return read;
     }
 
-    private static int ParsePtgSheet(XlsBiffRecord record, int biffVersion, int offset, int read, Stack<string> operands, XlsFormulaReaderContext context, ref bool isInExternalSheet)
+    private static int ParsePtgSheet(XlsBiffRecord record, int biffVersion, int offset, int read, XlsFormulaStack operands, XlsFormulaReaderContext context, ref bool isInExternalSheet)
     {
         // Not documented in [MS-XLS].
         // But included in 1988 Microsoft Excel documentation
@@ -2108,7 +2108,7 @@ internal static class XlsFormulaReader
         return read;
     }
 
-    private static int ParsePtgEndSheet(XlsBiffRecord record, int biffVersion, int offset, int read, Stack<string> operands)
+    private static int ParsePtgEndSheet(XlsBiffRecord record, int biffVersion, int offset, int read, XlsFormulaStack operands)
     {
         // Not documented in [MS-XLS].
         // But included in 1988 Microsoft Excel documentation
@@ -2120,7 +2120,7 @@ internal static class XlsFormulaReader
         return read;
     }
 
-    private static int ParsePtgRefErr(XlsBiffRecord record, int biffVersion, int offset, int read, Stack<string> operands)
+    private static int ParsePtgRefErr(XlsBiffRecord record, int biffVersion, int offset, int read, XlsFormulaStack operands)
     {
         // [MS-XLS] 2.5.198.86 PtgRefErr
         // The PtgRefErr operand specifies an erroneous reference to a single cell.
@@ -2237,7 +2237,7 @@ internal static class XlsFormulaReader
         }
     }
 
-    private static int ParsePtgMemErr(XlsBiffRecord record, int biffVersion, int offset, int read, Stack<string> operands)
+    private static int ParsePtgMemErr(XlsBiffRecord record, int biffVersion, int offset, int read, XlsFormulaStack operands)
     {
         // [MS-XLS] 2.5.198.71 PtgMemErr
         // The PtgMemErr mem token specifies that the result of a binary-reference-expression
@@ -2326,7 +2326,7 @@ internal static class XlsFormulaReader
         return read;
     }
 
-    private static int ParsePtgAreaErr(XlsBiffRecord record, int biffVersion, int offset, int read, Stack<string> operands)
+    private static int ParsePtgAreaErr(XlsBiffRecord record, int biffVersion, int offset, int read, XlsFormulaStack operands)
     {
         // [MS-XLS] 2.5.198.29 PtgAreaErr
         // The PtgAreaErr operand specifies an erroneous reference to
@@ -2365,7 +2365,7 @@ internal static class XlsFormulaReader
         return read;
     }
 
-    private static int ParsePtgFuncCE(XlsBiffRecord record, int biffVersion, int offset, int read, Stack<string> operands)
+    private static int ParsePtgFuncCE(XlsBiffRecord record, int biffVersion, int offset, int read, XlsFormulaStack operands)
     {
         // Not documented in [MS-XLS].
         // But included in 1988 Microsoft Excel documentation
@@ -2380,7 +2380,7 @@ internal static class XlsFormulaReader
         return read;
     }
 
-    private static int ParsePtgNameX(XlsBiffRecord record, int biffVersion, int offset, int read, Stack<string> operands, XlsFormulaReaderContext context)
+    private static int ParsePtgNameX(XlsBiffRecord record, int biffVersion, int offset, int read, XlsFormulaStack operands, XlsFormulaReaderContext context)
     {
         // [MS-XLS] 2.5.198.77 PtgNameX
         // The PtgNameX structure specifies a reference to a defined
@@ -2465,7 +2465,7 @@ internal static class XlsFormulaReader
         return read;
     }
 
-    private static int ParsePtgRef3d5(XlsBiffRecord record, int biffVersion, int offset, int read, Stack<string> operands, XlsFormulaReaderContext context, bool isError)
+    private static int ParsePtgRef3d5(XlsBiffRecord record, int biffVersion, int offset, int read, XlsFormulaStack operands, XlsFormulaReaderContext context, bool isError)
     {
         // Token tRef3d for 3D references, BIFF5:
         // This is always a negative value to indicate a 3D reference. The absolute
@@ -2510,7 +2510,7 @@ internal static class XlsFormulaReader
         return read;
     }
 
-    private static int ParsePtgRef3d8(XlsBiffRecord record, int biffVersion, int offset, int read, Stack<string> operands, XlsFormulaReaderContext context)
+    private static int ParsePtgRef3d8(XlsBiffRecord record, int biffVersion, int offset, int read, XlsFormulaStack operands, XlsFormulaReaderContext context)
     {
         // [MS-XLS] 2.5.198.85 PtgRef3d
         // The PtgRef3d operand specifies a reference to a single cell in an external workbook.
@@ -2531,7 +2531,7 @@ internal static class XlsFormulaReader
         return read;
     }
 
-    private static int ParsePtgArea3d5(XlsBiffRecord record, int biffVersion, int offset, int read, Stack<string> operands, XlsFormulaReaderContext context, bool isError)
+    private static int ParsePtgArea3d5(XlsBiffRecord record, int biffVersion, int offset, int read, XlsFormulaStack operands, XlsFormulaReaderContext context, bool isError)
     {
         // BIFF5 stores PtgArea3d differently.
         // Not documented in MS-XLS.
@@ -2580,7 +2580,7 @@ internal static class XlsFormulaReader
         return read;
     }
 
-    private static int ParsePtgArea3d8(XlsBiffRecord record, int biffVersion, int offset, int read, Stack<string> operands, XlsFormulaReaderContext context)
+    private static int ParsePtgArea3d8(XlsBiffRecord record, int biffVersion, int offset, int read, XlsFormulaStack operands, XlsFormulaReaderContext context)
     {
         // [MS-XLS] 2.5.198.28 PtgArea3d
         // The PtgArea3d operand specifies a reference to a rectangular range of
@@ -2602,7 +2602,7 @@ internal static class XlsFormulaReader
         return read;
     }
 
-    private static int ParsePtgAttr(XlsBiffRecord record, int biffVersion, int offset, int read, Stack<string> operands, StringBuilder formulaString, ref bool isBasicAssignment)
+    private static int ParsePtgAttr(XlsBiffRecord record, int biffVersion, int offset, int read, XlsFormulaStack operands, ref bool isBasicAssignment)
     {
         byte ptgSubType = record.ReadByte(offset + read);
         read++;
@@ -2643,11 +2643,11 @@ internal static class XlsFormulaReader
                 break;
 
             case 0x40:
-                read = ParsePtgAttrSpace(record, offset, read, formulaString);
+                read = ParsePtgAttrSpace(record, biffVersion, offset, read, operands);
                 break;
 
             case 0x41:
-                read = ParsePtgAttrSpaceSemi(record, offset, read, formulaString);
+                read = ParsePtgAttrSpaceSemi(record, biffVersion, offset, read, operands);
                 break;
 
             default:
@@ -2771,7 +2771,7 @@ internal static class XlsFormulaReader
         return read;
     }
 
-    private static int ParsePtgAttrSum(XlsBiffRecord record, int biffVersion, int offset, int read, Stack<string> operands)
+    private static int ParsePtgAttrSum(XlsBiffRecord record, int biffVersion, int offset, int read, XlsFormulaStack operands)
     {
         // [MS-XLS] 2.5.198.41 PtgAttrSum
         // The PtgAttrSum structure specifies the sum
@@ -2814,7 +2814,7 @@ internal static class XlsFormulaReader
         return read;
     }
 
-    private static int ParsePtgAttrSpace(XlsBiffRecord record, int offset, int read, StringBuilder formulaString)
+    private static int ParsePtgAttrSpace(XlsBiffRecord record, int biffVersion, int offset, int read, XlsFormulaStack operands)
     {
         // [MS-XLS] 2.5.198.38 PtgAttrSpace
         // The PtgAttrSpace display token specifies a number of space or carriage
@@ -2823,10 +2823,10 @@ internal static class XlsFormulaReader
 
         // type (2 bytes): A PtgAttrSpaceType that specifies a number of space
         // or carriage return characters and the position of those characters
-        return ParsePtgAttrSpaceType(record, offset, read, formulaString);
+        return ParsePtgAttrSpaceType(record, biffVersion, offset, read, operands);
     }
 
-    private static int ParsePtgAttrSpaceSemi(XlsBiffRecord record, int offset, int read, StringBuilder formulaString)
+    private static int ParsePtgAttrSpaceSemi(XlsBiffRecord record, int biffVersion, int offset, int read, XlsFormulaStack operands)
     {
         // [MS-XLS] 2.5.198.39 PtgAttrSpaceSemi
         // The PtgAttrSpaceSemi structure specifies a number of space
@@ -2836,10 +2836,10 @@ internal static class XlsFormulaReader
 
         // type (2 bytes): A PtgAttrSpaceType that specifies a number
         // of space or carriage return characters and position of those characters
-        return ParsePtgAttrSpaceType(record, offset, read, formulaString);
+        return ParsePtgAttrSpaceType(record, biffVersion, offset, read, operands);
     }
 
-    private static int ParsePtgAttrSpaceType(XlsBiffRecord record, int offset, int read, StringBuilder formulaString)
+    private static int ParsePtgAttrSpaceType(XlsBiffRecord record, int biffVersion, int offset, int read, XlsFormulaStack operands)
     {
         // [MS-XLS] 2.5.198.40 PtgAttrSpaceType
         // The PtgAttrSpaceType structure specifies the number of space or
@@ -2858,29 +2858,41 @@ internal static class XlsFormulaReader
         // 0x05 Specifies carriage return characters before the close parenthesis
         // specified by PtgParen in a display-precedence-specifier.
         // 0x06 Specifies space characters before an expression.
-        var spaceType = record.ReadByte(offset + read);
-        read++;
-
-        // cch (1 byte): An unsigned integer that specifies
-        // the number of characters.
-        var charCount = record.ReadByte(offset + read);
-        read++;
-
-        switch (spaceType)
+        if (biffVersion == 3)
         {
-            case 0x00:
-            case 0x02:
-            case 0x04:
-            case 0x06:
-                formulaString.Append(' ', charCount);
-                break;
-            case 0x01:
-            case 0x03:
-            case 0x05:
-                formulaString.Append('\r', charCount);
-                break;
-            default:
-                throw new NotSupportedException($"PTG PtgAttrSpaceType with type 0x{spaceType:X2} not supported in formula string parsing.");
+            // The structure is different in BIFF3.
+            // Number of spaces following the equality sign (1…255)
+            var spaceCount = record.ReadUInt16(offset + read);
+            read += 2;
+
+            operands.AddSpacesBeforeNextOperand(' ', spaceCount);
+        }
+        else
+        {    
+            var spaceType = record.ReadByte(offset + read);
+            read++;
+
+            // cch (1 byte): An unsigned integer that specifies
+            // the number of characters.
+            var charCount = record.ReadByte(offset + read);
+            read++;
+
+            switch (spaceType)
+            {
+                case 0x00:
+                case 0x02:
+                case 0x04:
+                case 0x06:
+                    operands.AddSpacesBeforeNextOperand(' ', charCount);
+                    break;
+                case 0x01:
+                case 0x03:
+                case 0x05:
+                    operands.AddSpacesBeforeNextOperand('\r', charCount);
+                    break;
+                default:
+                    throw new NotSupportedException($"PTG PtgAttrSpaceType with type 0x{spaceType:X2} not supported in formula string parsing.");
+            }
         }
 
         return read;
@@ -3054,6 +3066,40 @@ internal static class XlsFormulaReader
 
                     return workbook.Sheets[sheetIndex];
                 }
+        }
+    }
+
+    private sealed class XlsFormulaStack
+    {
+        private Stack<string> _operands = new();
+        private string _spaces;
+
+        public int Count => _operands.Count;
+
+        public void Push(string value)
+        {
+            if (_spaces != null)
+            {
+                value = _spaces + value;
+                _spaces = null;
+            }
+
+            _operands.Push(value);
+        }
+
+        public string Pop() => _operands.Pop();
+
+        public void AddSpacesBeforeNextOperand(char spaceChar, int count)
+        {
+            string spaces = new(spaceChar, count);
+            if (_spaces != null)
+            {
+                _spaces += spaces;
+            }
+            else
+            {
+                _spaces = spaces;
+            }
         }
     }
 }
